@@ -39,3 +39,4 @@ coverage/
 *.local
 
 
+public/search-index.json

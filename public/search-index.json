@@ -6,21 +6,9 @@
     "url": "/blog/"
   },
   {
-    "id": "/learning/2025-03-15-advanced-topics",
-    "title": "高级主题：打包、部署与监控",
-    "text": "高级主题：打包、部署与监控 要点： 使用 vitepress build 生成静态站点并部署到 CDN CI：在 push 时运行构建并把产物发布到 gh pages 或对象存储 运行时监控：页面性能、可用性与搜索功能监控",
-    "url": "/learning/2025-03-15-advanced-topics"
-  },
-  {
-    "id": "/learning/getting-started",
-    "title": "学习中心 — 快速开始",
-    "text": "快速开始 本教程覆盖本地环境搭建、仓库结构介绍与首个练习任务。 步骤： 1. 克隆仓库并安装依赖： npm install 2. 本地运行文档： npm run docs:dev 3. 认领第一个小任务并创建 PR 推荐资源： 项目 README 团队代码规范",
-    "url": "/learning/getting-started"
-  },
-  {
     "id": "/learning/",
     "title": "学习中心",
-    "text": "学习中心 学习中心占位页：聚合文档、教程与课程链接。",
+    "text": "学习中心 学习中心存储了关于产品与支持信息的基础概念。",
     "url": "/learning/"
   },
   {
