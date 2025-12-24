@@ -15,21 +15,34 @@ function generateSidebarFor(dirRelativePath) {
     .map((f) => f.name)
 
   const groups = []
-  // helper: read frontmatter title from a markdown file, fallback to null
-  function getTitleFromFile(fullPath) {
-    try {
-      const content = fs.readFileSync(fullPath, 'utf8')
-      const fmMatch = content.match(/^---\s*[\r\n]+([\s\S]*?)\r?\n---/)
-      if (fmMatch) {
-        const fm = fmMatch[1]
-        const titleMatch = fm.match(/^\s*title:\s*(?:"([^"]+)"|'([^']+)'|(.+))$/m)
-        if (titleMatch) return (titleMatch[1] || titleMatch[2] || titleMatch[3] || '').trim()
-      }
-    } catch (e) {
-      // ignore and fallback
+// helper: read frontmatter from a markdown file, return parsed object
+function getFrontmatterFromFile(fullPath) {
+  try {
+    const content = fs.readFileSync(fullPath, 'utf8')
+    const fmMatch = content.match(/^---\s*[\r\n]+([\s\S]*?)\r?\n---/)
+    if (fmMatch) {
+      const fm = fmMatch[1]
+      const frontmatter = {}
+
+      // parse title
+      const titleMatch = fm.match(/^\s*title:\s*(?:"([^"]+)"|'([^']+)'|(.+))$/m)
+      if (titleMatch) frontmatter.title = (titleMatch[1] || titleMatch[2] || titleMatch[3] || '').trim()
+
+      // parse order
+      const orderMatch = fm.match(/^\s*order:\s*(\d+)$/m)
+      if (orderMatch) frontmatter.order = parseInt(orderMatch[1])
+
+      // parse date (if needed for fallback sorting)
+      const dateMatch = fm.match(/^\s*date:\s*(?:"([^"]+)"|'([^']+)'|(.+))$/m)
+      if (dateMatch) frontmatter.date = (dateMatch[1] || dateMatch[2] || dateMatch[3] || '').trim()
+
+      return frontmatter
     }
-    return null
+  } catch (e) {
+    // ignore and fallback
   }
+  return {}
+}
 
   // add root files as a flat group (if any)
   const rootItems = rootFiles
@@ -37,8 +50,27 @@ function generateSidebarFor(dirRelativePath) {
     .map((name) => {
       const basename = name.replace(/\.mdx?$/i, '')
       const fullPath = path.join(root, name)
-      const title = getTitleFromFile(fullPath) || basename.replace(/^\d{4}-\d{2}-\d{2}-?/, '')
-      return { text: title, link: `/${dirRelativePath}/${basename}` }
+      const frontmatter = getFrontmatterFromFile(fullPath)
+      const title = frontmatter.title || basename.replace(/^\d{4}-\d{2}-\d{2}-?/, '')
+      return {
+        text: title,
+        link: `/${dirRelativePath}/${basename}`,
+        order: frontmatter.order,
+        date: frontmatter.date
+      }
+    })
+    .sort((a, b) => {
+      // 按 order 升序排序，如果没有 order 则按 date 降序
+      if (a.order != null && b.order != null) {
+        return a.order - b.order
+      }
+      if (a.order != null) return -1
+      if (b.order != null) return 1
+
+      // 如果都没有 order，按日期降序（最新的在前面）
+      const dateA = a.date ? new Date(a.date).getTime() : 0
+      const dateB = b.date ? new Date(b.date).getTime() : 0
+      return dateB - dateA
     })
   if (rootItems.length) {
     groups.push({ text: '文章', items: rootItems })
@@ -54,8 +86,27 @@ function generateSidebarFor(dirRelativePath) {
       .map((f) => {
         const basename = f.name.replace(/\.mdx?$/i, '')
         const fullPath = path.join(subPath, f.name)
-        const title = getTitleFromFile(fullPath) || basename.replace(/^\d{4}-\d{2}-\d{2}-?/, '')
-        return { text: title, link: `/${dirRelativePath}/${d.name}/${basename}` }
+        const frontmatter = getFrontmatterFromFile(fullPath)
+        const title = frontmatter.title || basename.replace(/^\d{4}-\d{2}-\d{2}-?/, '')
+        return {
+          text: title,
+          link: `/${dirRelativePath}/${d.name}/${basename}`,
+          order: frontmatter.order,
+          date: frontmatter.date
+        }
+      })
+      .sort((a, b) => {
+        // 按 order 升序排序，如果没有 order 则按 date 降序
+        if (a.order != null && b.order != null) {
+          return a.order - b.order
+        }
+        if (a.order != null) return -1
+        if (b.order != null) return 1
+
+        // 如果都没有 order，按日期降序（最新的在前面）
+        const dateA = a.date ? new Date(a.date).getTime() : 0
+        const dateB = b.date ? new Date(b.date).getTime() : 0
+        return dateB - dateA
       })
     if (subItems.length) {
       groups.push({ text: d.name, items: subItems })
@@ -67,6 +118,9 @@ function generateSidebarFor(dirRelativePath) {
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
+  head: [
+    ['link', { rel: 'icon', href: '/dreamreflex-logo-square-no-bg.svg' }]
+  ],
   title: "DreamReflex Blog",
   description: "云梦镜像博客",
   themeConfig: {
@@ -103,6 +157,7 @@ export default defineConfig({
     }
   },
   markdown: {
-    toc: { level: [2, 3] }
+    toc: { level: [2, 3] },
+    math: true
   }
 })
