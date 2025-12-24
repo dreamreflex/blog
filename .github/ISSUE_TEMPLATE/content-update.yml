@@ -49,8 +49,7 @@ body:
         - 网络安全和信息安全相关内容 (Network and Information Security)
         - 零信任和渐进性零信任内容 (Zero Trust and Progressive Zero Trust)
         - 其他学习中心内容 (Other Learning Center Content)
-    validations:
-      required: false
+
 
   - type: textarea
     id: current-content
@@ -62,8 +61,7 @@ body:
         - 在博客的"常见问题"板块中，有一篇关于XXX的文章
         - 在学习中心的"Windows安全体系"中，关于注册表的介绍
         - 某个具体的问题或概念的描述
-    validations:
-      required: true
+
 
   - type: textarea
     id: issue-description
@@ -77,8 +75,7 @@ body:
         - 缺少某个重要主题的内容
         - 存在事实性错误
         - 链接失效或需要更新
-    validations:
-      required: true
+
 
   - type: textarea
     id: suggested-update
@@ -92,8 +89,7 @@ body:
         - 修正XXX的描述
         - 补充XXX相关的内容
         - 提供具体的修改建议或新增内容
-    validations:
-      required: true
+
 
   - type: input
     id: reference-links
