@@ -125,6 +125,10 @@ export default defineConfig({
   description: "云梦镜像博客",
   themeConfig: {
     // local search provider (merged from duplicate key)
+    editLink: {
+      pattern: 'https://github.com/dreamreflex/blog/edit/main/:path',
+      text: '在Github上编辑此页'
+    },
     search: {
       provider: 'local'
     },
