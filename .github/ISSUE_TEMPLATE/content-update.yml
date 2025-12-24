@@ -1,0 +1,125 @@
+name: 内容更新建议
+description: 建议更新博客或学习中心的内容
+title: "[内容更新] "
+labels: ["content-update", "enhancement"]
+assignees: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 内容更新建议
+
+        感谢您为云梦镜像博客和学习中心的内容更新提供建议！请填写以下信息以帮助我们更好地理解您的需求。
+
+  - type: dropdown
+    id: content-type
+    attributes:
+      label: 更新内容类型
+      description: 请选择您希望更新的内容类型
+      options:
+        - 博客内容 (Blog)
+        - 学习中心内容 (Learning Center)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: blog-section
+    attributes:
+      label: 博客板块选择
+      description: 如果您选择的是博客内容，请选择具体的板块
+      options:
+        - 常见问题 (FAQ)
+        - 技术方案 (Technical Solutions)
+        - 最佳实践 (Best Practices)
+        - 其他博客内容 (Other Blog Content)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: learning-section
+    attributes:
+      label: 学习中心主题选择
+      description: 如果您选择的是学习中心内容，请选择具体的主题
+      options:
+        - Windows安全体系 (Windows Security System)
+        - CDN体系和现代网络体系 (CDN and Modern Network Systems)
+        - 云服务和多云体系 (Cloud Services and Multi-Cloud Systems)
+        - 量子计算和后量子密码学体系 (Quantum Computing and Post-Quantum Cryptography)
+        - 人工智能相关内容 (Artificial Intelligence)
+        - 网络安全和信息安全相关内容 (Network and Information Security)
+        - 零信任和渐进性零信任内容 (Zero Trust and Progressive Zero Trust)
+        - 其他学习中心内容 (Other Learning Center Content)
+    validations:
+      required: false
+
+  - type: textarea
+    id: current-content
+    attributes:
+      label: 当前内容描述
+      description: 请描述您发现的当前内容，包括具体位置（如果知道的话）
+      placeholder: |
+        例如：
+        - 在博客的"常见问题"板块中，有一篇关于XXX的文章
+        - 在学习中心的"Windows安全体系"中，关于注册表的介绍
+        - 某个具体的问题或概念的描述
+    validations:
+      required: true
+
+  - type: textarea
+    id: issue-description
+    attributes:
+      label: 发现的问题或需要改进的地方
+      description: 请详细描述您发现的问题、不准确的信息、过时的内容或其他需要改进的地方
+      placeholder: |
+        例如：
+        - 技术信息已过时，需要更新到最新版本
+        - 概念解释不够清晰，需要更详细的说明
+        - 缺少某个重要主题的内容
+        - 存在事实性错误
+        - 链接失效或需要更新
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested-update
+    attributes:
+      label: 建议的更新内容
+      description: 请提供您建议的更新内容或改进方案
+      placeholder: |
+        例如：
+        - 更新到XXX版本的信息
+        - 添加关于XXX的详细解释
+        - 修正XXX的描述
+        - 补充XXX相关的内容
+        - 提供具体的修改建议或新增内容
+    validations:
+      required: true
+
+  - type: input
+    id: reference-links
+    attributes:
+      label: 参考链接或资料（可选）
+      description: 如果有相关的参考资料、文档链接或其他信息来源，请提供
+      placeholder: "https://example.com, 相关书籍名称, 其他参考资料"
+
+  - type: textarea
+    id: additional-info
+    attributes:
+      label: 其他补充信息（可选）
+      description: 任何其他您认为有助于我们理解和处理这个更新请求的信息
+      placeholder: |
+        例如：
+        - 您的使用场景
+        - 为什么这个更新重要
+        - 相关的优先级考虑
+        - 其他相关问题或建议
+
+  - type: checkboxes
+    id: contribution-offer
+    attributes:
+      label: 贡献意愿
+      description: 您是否愿意参与内容的更新工作？
+      options:
+        - label: 我愿意提供具体的更新内容或草稿
+        - label: 我愿意协助验证更新内容的准确性
+        - label: 我只提供建议，不参与具体更新工作
