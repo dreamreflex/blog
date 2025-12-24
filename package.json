@@ -1,0 +1,14 @@
+{
+  "devDependencies": {
+    "vitepress": "^2.0.0-alpha.15"
+  },
+  "scripts": {
+    "docs:dev": "vitepress dev",
+    "generate-search-index": "node .vitepress/scripts/generate-search-index.mjs",
+    "docs:build": "npm run generate-search-index && vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "dependencies": {
+    "minisearch": "^7.2.0"
+  }
+}

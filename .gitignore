@@ -1,0 +1,41 @@
+# Node dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+logs/
+*.log
+
+# Build output
+dist/
+build/
+
+# Vite and VitePress
+.vite/
+.vitepress/dist/
+.vitepress/cache/
+.vitepress/.temp/
+
+# Environment files
+.env
+.env.*.local
+
+# OS & editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Misc
+*.tgz
+*.zip
+*.local
+
+

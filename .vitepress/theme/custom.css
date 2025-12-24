@@ -1,0 +1,85 @@
+ :root {
+  --vp-c-brand-1: #1f5fff;
+  --vp-c-brand-2: #3a6cff;
+  --vp-font-family-base: "Noto Sans SC", "PingFang SC", sans-serif;
+}
+
+/* Home page */
+.VPHome .VPHero .name {
+  font-size: 56px;
+  letter-spacing: 0.02em;
+}
+.VPHome .VPHero .text {
+  font-size: 20px;
+}
+.VPHome .VPFeatures {
+  margin-top: 32px;
+}
+:root {
+  --vp-c-brand-1: #1f5fff;
+  --vp-c-brand-2: #3a6cff;
+  --vp-font-family-base: "Noto Sans SC", "PingFang SC", sans-serif;
+}
+
+/* Home page */
+.VPHome .VPHero .name {
+  font-size: 56px;
+  letter-spacing: 0.02em;
+}
+.VPHome .VPHero .text {
+  font-size: 20px;
+}
+.VPHome .VPFeatures {
+  margin-top: 32px;
+}
+
+/* 自定义首页顶部：标题左，Logo 右 */
+.home-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 48px 24px;
+}
+.home-hero-left {
+  max-width: 70%;
+}
+.home-title {
+  margin: 0;
+  font-size: 48px;
+  line-height: 1.1;
+}
+.home-sub {
+  margin: 8px 0 18px 0;
+  color: #666;
+  font-size: 18px;
+}
+.home-actions .vp-btn {
+  margin-right: 12px;
+}
+.home-hero-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.home-logo {
+  width: 140px;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(31,95,255,0.12);
+}
+
+@media (max-width: 768px) {
+  .home-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .home-hero-left {
+    max-width: 100%;
+  }
+  .home-logo {
+    width: 120px;
+    margin-top: 18px;
+  }
+}
+/* 移除了将 logo 作为 hero 背景的写法，改用内容内布局 */
