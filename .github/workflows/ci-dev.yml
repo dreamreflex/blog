@@ -138,27 +138,56 @@ jobs:
 
       - name: Enable auto-merge for PRs labeled auto-merge
         run: |
-          # 短暂等待，确保PR创建完成
-          sleep 5
+          # 等待更长时间，确保PR创建完成
+          echo "Waiting for PR creation to complete..."
+          sleep 10
 
-          # 使用GitHub API查找并启用auto-merge
-          PR_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github.v3+json" \
-            "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:dev&base=main&state=open")
+          # 使用GitHub API查找PR - 尝试多次
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
 
-          PR_NUMBER=$(echo "$PR_RESPONSE" | jq -r '.[0].number')
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT: Looking for PR from dev to main..."
 
-          if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ]; then
-            echo "Enabling auto-merge for PR #$PR_NUMBER"
-
-            # 启用auto-merge - 使用正确的GitHub API
-            curl -s -X PATCH \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            # 使用GitHub API查找PR
+            PR_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
-              -d '{"auto_merge":{"enabled":true,"merge_method":"merge"}}' \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" > /dev/null
+              "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:dev&base=main&state=open")
 
-            echo "Auto-merge enabled for PR #$PR_NUMBER"
-          else
-            echo "No open PR found from dev to main"
-          fi
+            PR_COUNT=$(echo "$PR_RESPONSE" | jq -r 'length')
+            PR_NUMBER=$(echo "$PR_RESPONSE" | jq -r '.[0].number // empty')
+
+            echo "Found $PR_COUNT PR(s), first PR number: $PR_NUMBER"
+
+            if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "" ]; then
+              echo "Found PR #$PR_NUMBER, enabling auto-merge..."
+
+              # 启用auto-merge - 使用正确的GitHub API
+              MERGE_RESPONSE=$(curl -s -X PATCH \
+                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+                -H "Accept: application/vnd.github.v3+json" \
+                -d '{"auto_merge":{"enabled":true,"merge_method":"merge"}}' \
+                "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+
+              MERGE_STATUS=$(echo "$MERGE_RESPONSE" | jq -r '.message // "success"')
+
+              if [ "$MERGE_STATUS" = "success" ]; then
+                echo "✅ Auto-merge successfully enabled for PR #$PR_NUMBER"
+                exit 0
+              else
+                echo "❌ Failed to enable auto-merge: $MERGE_STATUS"
+                echo "Response: $MERGE_RESPONSE"
+              fi
+            else
+              echo "No open PR found from dev to main (attempt $ATTEMPT/$MAX_ATTEMPTS)"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                echo "Waiting 5 seconds before retry..."
+                sleep 5
+              fi
+            fi
+
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+          echo "❌ Failed to find or enable auto-merge for PR after $MAX_ATTEMPTS attempts"
+          exit 1
