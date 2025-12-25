@@ -151,12 +151,12 @@ jobs:
           if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ]; then
             echo "Enabling auto-merge for PR #$PR_NUMBER"
 
-            # 启用auto-merge
-            curl -s -X PUT \
+            # 启用auto-merge - 使用正确的GitHub API
+            curl -s -X PATCH \
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
-              -d '{"merge_method":"merge"}' \
-              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/merge" > /dev/null
+              -d '{"auto_merge":{"enabled":true,"merge_method":"merge"}}' \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" > /dev/null
 
             echo "Auto-merge enabled for PR #$PR_NUMBER"
           else
