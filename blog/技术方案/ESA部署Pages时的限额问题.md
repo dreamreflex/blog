@@ -334,7 +334,7 @@ root@phil616-home-server:~# aliyun esa DeleteRoutineCodeVersion --region cn-hang
 
 CI完成之后，dev合并到main分支。
 
-#### 1.1 CI配置文件 (ci-dev.yml)
+#### 1.1 清理配置文件 (clean-esa-main.yml)
 
 ```yaml
 name: CI (dev)
@@ -485,11 +485,15 @@ echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
 
 ### 3. 工作流程说明
 
-1. **开发阶段**: 在dev分支上进行开发和提交
-2. **自动清理**: 每次push到dev分支时，ci-dev.yml会自动触发，清理阿里云ESA的旧版本
-3. **创建PR**: 清理成功后，ci-dev.yml会自动创建从dev到main的PR
-4. **自动合并**: PR创建后会自动启用自动合并功能
-5. **ESA构建**: 合并到main分支后，ESA会自动检测到main分支的变化并触发构建
+1. **开发阶段**: 直接在main分支上进行开发和提交
+2. **自动清理**: 每次push到main分支时，clean-esa-main.yml会自动触发，清理阿里云ESA的旧版本
+3. **ESA部署**: 清理完成后，ESA会自动检测main分支的变化并触发部署构建
+
+**简化流程优势：**
+- ✅ 去掉了复杂的dev分支和PR流程
+- ✅ 用户只需直接push到main分支
+- ✅ 自动清理版本后立即部署
+- ✅ 完全无需手动干预
 
 ### 4. 注意事项
 
