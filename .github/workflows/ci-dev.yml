@@ -122,7 +122,8 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Create or update PR dev -> main
+      - name: Create PR dev -> main
+        id: create-pr
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -136,58 +137,49 @@ jobs:
             - Cleaned up versions to retain only the latest ${{ vars.RETAIN_VERSIONS || '1' }} version(s)
           labels: auto-merge
 
-      - name: Enable auto-merge for PRs labeled auto-merge
+      - name: Verify PR creation and enable auto-merge
         run: |
-          # 等待更长时间，确保PR创建完成
-          echo "Waiting for PR creation to complete..."
-          sleep 10
+          # 检查PR是否创建成功
+          if [ "${{ steps.create-pr.outputs.pull-request-number }}" == "" ]; then
+            echo "❌ PR creation failed - no PR number returned"
+            echo "Checking for existing PRs manually..."
 
-          # 使用GitHub API查找PR - 尝试多次
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT: Looking for PR from dev to main..."
-
-            # 使用GitHub API查找PR
+            # 手动查找PR（备用方案）
             PR_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:dev&base=main&state=open")
 
-            PR_COUNT=$(echo "$PR_RESPONSE" | jq -r 'length')
+            PR_COUNT=$(echo "$PR_RESPONSE" | jq -r 'length // 0')
             PR_NUMBER=$(echo "$PR_RESPONSE" | jq -r '.[0].number // empty')
 
-            echo "Found $PR_COUNT PR(s), first PR number: $PR_NUMBER"
-
-            if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ] && [ "$PR_NUMBER" != "" ]; then
-              echo "Found PR #$PR_NUMBER, enabling auto-merge..."
-
-              # 启用auto-merge - 使用正确的GitHub API
-              MERGE_RESPONSE=$(curl -s -X PATCH \
-                -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-                -H "Accept: application/vnd.github.v3+json" \
-                -d '{"auto_merge":{"enabled":true,"merge_method":"merge"}}' \
-                "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
-
-              MERGE_STATUS=$(echo "$MERGE_RESPONSE" | jq -r '.message // "success"')
-
-              if [ "$MERGE_STATUS" = "success" ]; then
-                echo "✅ Auto-merge successfully enabled for PR #$PR_NUMBER"
-                exit 0
-              else
-                echo "❌ Failed to enable auto-merge: $MERGE_STATUS"
-                echo "Response: $MERGE_RESPONSE"
-              fi
+            if [ "$PR_COUNT" -gt 0 ] && [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ]; then
+              echo "Found existing PR #$PR_NUMBER"
             else
-              echo "No open PR found from dev to main (attempt $ATTEMPT/$MAX_ATTEMPTS)"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                echo "Waiting 5 seconds before retry..."
-                sleep 5
-              fi
+              echo "❌ No PR found. Action output: ${{ steps.create-pr.outputs.pull-request-number }}"
+              echo "❌ Action result: ${{ steps.create-pr.outputs.pull-request-operation }}"
+              echo "❌ Action URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+              exit 1
             fi
+          else
+            PR_NUMBER="${{ steps.create-pr.outputs.pull-request-number }}"
+            echo "✅ PR created successfully: #$PR_NUMBER"
+          fi
 
-            ATTEMPT=$((ATTEMPT + 1))
-          done
+          # 启用auto-merge
+          echo "Enabling auto-merge for PR #$PR_NUMBER..."
 
-          echo "❌ Failed to find or enable auto-merge for PR after $MAX_ATTEMPTS attempts"
-          exit 1
+          MERGE_RESPONSE=$(curl -s -X PATCH \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            -d '{"auto_merge":{"enabled":true,"merge_method":"merge"}}' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+
+          MERGE_MESSAGE=$(echo "$MERGE_RESPONSE" | jq -r '.message // empty')
+
+          if [ -z "$MERGE_MESSAGE" ] || [ "$MERGE_MESSAGE" = "null" ]; then
+            echo "✅ Auto-merge successfully enabled for PR #$PR_NUMBER"
+          else
+            echo "❌ Failed to enable auto-merge: $MERGE_MESSAGE"
+            echo "Response: $MERGE_RESPONSE"
+            exit 1
+          fi
