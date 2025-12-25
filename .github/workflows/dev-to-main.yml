@@ -1,0 +1,43 @@
+name: Dev -> Main PR and Auto-merge
+
+on:
+  push:
+    branches: [ dev ]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create or update PR dev -> main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: dev
+          title: "chore(CI): merge dev into main (after ESA version cleanup)"
+          body: |
+            Automated PR to merge dev into main.
+
+            This PR is created after successfully cleaning up old ESA versions to prevent deployment quota limits.
+          labels: auto-merge
+
+  enable_automerge:
+    needs: pr
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Enable auto-merge for PRs labeled auto-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # 找到 dev->main 的 open PR，然后开启 auto-merge（merge commit，可改成 --squash）
+          PR_NUMBER=$(gh pr list --base main --head dev --state open --json number --jq '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            gh pr merge "$PR_NUMBER" --auto --merge
+          fi
