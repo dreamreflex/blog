@@ -525,6 +525,8 @@ echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
 - 可以根据需要调整保留的版本数量（通过GitHub Variables配置）
 - 每次推送main分支都会触发清理，无需手动管理
 
+在实际使用中，在ESA控制台可能会发现，总会多出一个无用的CodeVersion，本质上是ESA的Github触发条件是WebHook触发，当代码一旦推送，构建流程就会开始，而CI始终在构建已经开始的情况下再删除，且不能删除当前的生产版本，因此不能够彻底删除原有的生产构建版本。
+
 ### 5. 故障排除
 
 #### 5.1 CLI配置问题
