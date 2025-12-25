@@ -137,11 +137,28 @@ jobs:
           labels: auto-merge
 
       - name: Enable auto-merge for PRs labeled auto-merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # 找到 dev->main 的 open PR，然后开启 auto-merge（merge commit，可改成 --squash）
-          PR_NUMBER=$(gh pr list --base main --head dev --state open --json number --jq '.[0].number')
-          if [ -n "$PR_NUMBER" ]; then
-            gh pr merge "$PR_NUMBER" --auto --merge
+          # 短暂等待，确保PR创建完成
+          sleep 5
+
+          # 使用GitHub API查找并启用auto-merge
+          PR_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:dev&base=main&state=open")
+
+          PR_NUMBER=$(echo "$PR_RESPONSE" | jq -r '.[0].number')
+
+          if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ]; then
+            echo "Enabling auto-merge for PR #$PR_NUMBER"
+
+            # 启用auto-merge
+            curl -s -X PUT \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -d '{"merge_method":"merge"}' \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER/merge" > /dev/null
+
+            echo "Auto-merge enabled for PR #$PR_NUMBER"
+          else
+            echo "No open PR found from dev to main"
           fi
