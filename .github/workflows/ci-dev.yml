@@ -87,6 +87,7 @@ jobs:
 
       # 验证清理结果
       - name: Verify Clean Result
+        id: verify-clean
         env:
           PAGES_NAME: ${{ steps.get-pages-name.outputs.pages_name }}
           RETAIN_VERSIONS: ${{ vars.RETAIN_VERSIONS || '1' }}
@@ -101,7 +102,63 @@ jobs:
 
           if [ "$REMAINING_COUNT" -le "$RETAIN_VERSIONS" ]; then
             echo "✓ 版本清理成功，当前版本数: $REMAINING_COUNT (保留设置: $RETAIN_VERSIONS)"
+            echo "cleanup_success=true" >> $GITHUB_OUTPUT
           else
             echo "✗ 版本清理失败，仍有 $REMAINING_COUNT 个版本，期望保留: $RETAIN_VERSIONS"
+            echo "cleanup_success=false" >> $GITHUB_OUTPUT
             exit 1
+          fi
+
+  # 创建PR并设置自动合并
+  create-pr:
+    needs: clean-esa-versions
+    if: needs.clean-esa-versions.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create or update PR dev -> main
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: dev
+          title: "chore(CI): merge dev into main (after ESA version cleanup)"
+          body: |
+            Automated PR to merge dev into main.
+
+            This PR is created after successfully cleaning up old ESA versions to prevent deployment quota limits.
+            - Cleaned up versions to retain only the latest ${{ vars.RETAIN_VERSIONS || '1' }} version(s)
+          labels: auto-merge
+
+      - name: Enable auto-merge for PRs labeled auto-merge
+        run: |
+          # 短暂等待，确保PR创建完成
+          sleep 5
+
+          # 使用GitHub API查找并启用auto-merge
+          PR_RESPONSE=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls?head=${{ github.repository_owner }}:dev&base=main&state=open")
+
+          PR_NUMBER=$(echo "$PR_RESPONSE" | jq -r '.[0].number')
+
+          if [ "$PR_NUMBER" != "null" ] && [ -n "$PR_NUMBER" ]; then
+            echo "Enabling auto-merge for PR #$PR_NUMBER"
+
+            # 启用auto-merge - 使用正确的GitHub API
+            curl -s -X PATCH \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              -d '{"auto_merge":{"enabled":true,"merge_method":"merge"}}' \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER" > /dev/null
+
+            echo "Auto-merge enabled for PR #$PR_NUMBER"
+          else
+            echo "No open PR found from dev to main"
           fi
