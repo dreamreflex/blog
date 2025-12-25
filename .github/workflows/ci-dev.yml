@@ -40,6 +40,8 @@ jobs:
       - name: Clean ESA Code Versions
         env:
           PAGES_NAME: ${{ steps.get-pages-name.outputs.pages_name }}
+          # 配置保留的版本数，默认为1（只保留最新版本）
+          RETAIN_VERSIONS: ${{ vars.RETAIN_VERSIONS || '1' }}
         run: |
           set -euo pipefail
 
@@ -52,15 +54,15 @@ jobs:
           TOTAL_COUNT=$(echo $VERSIONS_JSON | jq -r '.TotalCount')
           echo "当前共有 $TOTAL_COUNT 个版本"
 
-          # 如果版本数不超过5个，不需要清理
-          if [ "$TOTAL_COUNT" -le 5 ]; then
-            echo "版本数未超过限制，无需清理"
+          # 如果版本数不超过保留数量，不需要清理
+          if [ "$TOTAL_COUNT" -le "$RETAIN_VERSIONS" ]; then
+            echo "版本数 ($TOTAL_COUNT) 未超过保留数量 ($RETAIN_VERSIONS)，无需清理"
             exit 0
           fi
 
-          # 计算需要删除的版本数（保留最新的1个，删除多余的）
-          DELETE_COUNT=$((TOTAL_COUNT - 1))
-          echo "需要删除 $DELETE_COUNT 个旧版本"
+          # 计算需要删除的版本数（保留指定数量的最新版本）
+          DELETE_COUNT=$((TOTAL_COUNT - RETAIN_VERSIONS))
+          echo "需要删除 $DELETE_COUNT 个旧版本，保留最新的 $RETAIN_VERSIONS 个版本"
 
           # 解析版本列表，按创建时间排序（最早的在前）
           VERSIONS_TO_DELETE=$(echo $VERSIONS_JSON | jq -r '.CodeVersions | sort_by(.CreateTime) | .[0:'$DELETE_COUNT'] | .[].CodeVersion')
@@ -87,6 +89,7 @@ jobs:
       - name: Verify Clean Result
         env:
           PAGES_NAME: ${{ steps.get-pages-name.outputs.pages_name }}
+          RETAIN_VERSIONS: ${{ vars.RETAIN_VERSIONS || '1' }}
         run: |
           set -euo pipefail
 
@@ -96,9 +99,9 @@ jobs:
 
           echo "清理后剩余版本数: $REMAINING_COUNT"
 
-          if [ "$REMAINING_COUNT" -le 5 ]; then
-            echo "✓ 版本清理成功，当前版本数: $REMAINING_COUNT"
+          if [ "$REMAINING_COUNT" -le "$RETAIN_VERSIONS" ]; then
+            echo "✓ 版本清理成功，当前版本数: $REMAINING_COUNT (保留设置: $RETAIN_VERSIONS)"
           else
-            echo "✗ 版本清理失败，仍有 $REMAINING_COUNT 个版本"
+            echo "✗ 版本清理失败，仍有 $REMAINING_COUNT 个版本，期望保留: $RETAIN_VERSIONS"
             exit 1
           fi
