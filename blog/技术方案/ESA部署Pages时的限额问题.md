@@ -17,13 +17,19 @@
 
 本质上的解决思路是，由于ESA的Pages只支持Github，因此可以利用阿里云的OpenAPI功能和Github Actions功能来提前清空版本，代价是只允许最新版本在部署。
 
-整个流程分3步
+**采用的最终策略是极简的直接推送模式：**
 
-1. 在dev分支内工作，更新和升级。
-2. 有Github Action机器人在dev分支合并到主分支前清空构建版本。
-3. 合并到主分支，触发Pages的自动构建。
+1. **直接在main分支上开发和提交** - 无需dev分支
+2. **每次推送main分支时自动清理ESA旧版本**
+3. **ESA检测到main分支变化后自动触发部署构建**
 
-体验下来的总体效果便是，每次更新dev分支，ESA的版本均会被清空，清空结束后，自动合并到main分支，触发构建，不会遇到限额。
+**策略优势：**
+- 极度简化工作流程，无需管理分支和PR
+- 每次推送后立即清理版本并部署
+- 完全自动化，无需人工干预
+- 避免了分支管理带来的复杂性和错误
+
+体验下来的总体效果便是，每次推送main分支，ESA的版本都会被自动清理，清理完成后ESA立即开始部署，不会遇到限额问题。
 
 ## 背景信息
 
@@ -324,24 +330,33 @@ root@phil616-home-server:~# aliyun esa DeleteRoutineCodeVersion --region cn-hang
 }
 ```
 
-完成后便可以合并到main分支，启动ESA的自动探测构建流程。
+完成后ESA会自动检测main分支的变化并启动部署流程。
 
 ## 构建步骤
 
 ### 1. Github Action
 
-基本思路是：CI文件负责上述API控制流程，并做好错误处理，根据`CreateTime`时间排序，删除最早的最多n个CodeVersion（最多4个，最少0个），n可自行修改。
+**采用极简的直接推送策略：**
 
-CI完成之后，dev合并到main分支。
+每次推送main分支时，自动触发清理workflow：
+1. 获取当前ESA的所有版本信息
+2. 根据创建时间排序，保留最新的n个版本（可配置，默认1个）
+3. 删除多余的旧版本
+4. ESA自动检测main分支变化并触发部署
+
+**核心优势：**
+- 推送即部署，无需等待
+- 自动清理版本，避免限额问题
+- 完全无需手动管理分支或PR
 
 #### 1.1 清理配置文件 (clean-esa-main.yml)
 
 ```yaml
-name: CI (dev)
+name: Clean ESA Versions on Main
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ main ]
 
 permissions:
   contents: read
@@ -379,10 +394,14 @@ jobs:
       - name: Clean ESA Code Versions
         env:
           PAGES_NAME: ${{ steps.get-pages-name.outputs.pages_name }}
+          # 配置保留的版本数，默认为1（只保留最新版本）
+          RETAIN_VERSIONS: ${{ vars.RETAIN_VERSIONS || '1' }}
         run: |
           set -euo pipefail
 
-          echo "正在获取 $PAGES_NAME 的所有代码版本..."
+          echo "开始清理阿里云ESA版本..."
+          echo "目标Pages: $PAGES_NAME"
+          echo "保留版本数: $RETAIN_VERSIONS"
 
           # 获取所有版本信息
           VERSIONS_JSON=$(aliyun esa ListRoutineCodeVersions --region cn-hangzhou --Name $PAGES_NAME)
@@ -391,15 +410,16 @@ jobs:
           TOTAL_COUNT=$(echo $VERSIONS_JSON | jq -r '.TotalCount')
           echo "当前共有 $TOTAL_COUNT 个版本"
 
-          # 如果版本数不超过5个，不需要清理
-          if [ "$TOTAL_COUNT" -le 5 ]; then
-            echo "版本数未超过限制，无需清理"
+          # 如果版本数不超过保留数量，不需要清理
+          if [ "$TOTAL_COUNT" -le "$RETAIN_VERSIONS" ]; then
+            echo "版本数 ($TOTAL_COUNT) 未超过保留数量 ($RETAIN_VERSIONS)，无需清理"
+            echo "ESA会自动检测main分支更新并部署"
             exit 0
           fi
 
-          # 计算需要删除的版本数（保留最新的1个，删除多余的）
-          DELETE_COUNT=$((TOTAL_COUNT - 1))
-          echo "需要删除 $DELETE_COUNT 个旧版本"
+          # 计算需要删除的版本数（保留指定数量的最新版本）
+          DELETE_COUNT=$((TOTAL_COUNT - RETAIN_VERSIONS))
+          echo "需要删除 $DELETE_COUNT 个旧版本，保留最新的 $RETAIN_VERSIONS 个版本"
 
           # 解析版本列表，按创建时间排序（最早的在前）
           VERSIONS_TO_DELETE=$(echo $VERSIONS_JSON | jq -r '.CodeVersions | sort_by(.CreateTime) | .[0:'$DELETE_COUNT'] | .[].CodeVersion')
@@ -407,25 +427,28 @@ jobs:
           echo "将要删除的版本: $VERSIONS_TO_DELETE"
 
           # 删除旧版本
+          DELETED_COUNT=0
           for VERSION in $VERSIONS_TO_DELETE; do
             echo "正在删除版本: $VERSION"
             DELETE_RESULT=$(aliyun esa DeleteRoutineCodeVersion --region cn-hangzhou --Name $PAGES_NAME --CodeVersion $VERSION)
             STATUS=$(echo $DELETE_RESULT | jq -r '.Status')
 
             if [ "$STATUS" = "OK" ]; then
-              echo "✓ 版本 $VERSION 删除成功"
+              echo "版本 $VERSION 删除成功"
+              DELETED_COUNT=$((DELETED_COUNT + 1))
             else
-              echo "✗ 版本 $VERSION 删除失败: $DELETE_RESULT"
+              echo "版本 $VERSION 删除失败: $DELETE_RESULT"
               exit 1
             fi
           done
 
-          echo "版本清理完成"
+          echo "版本清理完成！成功删除 $DELETED_COUNT 个旧版本"
 
       # 验证清理结果
       - name: Verify Clean Result
         env:
           PAGES_NAME: ${{ steps.get-pages-name.outputs.pages_name }}
+          RETAIN_VERSIONS: ${{ vars.RETAIN_VERSIONS || '1' }}
         run: |
           set -euo pipefail
 
@@ -435,15 +458,14 @@ jobs:
 
           echo "清理后剩余版本数: $REMAINING_COUNT"
 
-          if [ "$REMAINING_COUNT" -le 5 ]; then
-            echo "✓ 版本清理成功，当前版本数: $REMAINING_COUNT"
+          if [ "$REMAINING_COUNT" -le "$RETAIN_VERSIONS" ]; then
+            echo "版本清理成功，当前版本数: $REMAINING_COUNT (保留设置: $RETAIN_VERSIONS)"
+            echo "ESA会自动检测main分支更新并开始部署"
           else
-            echo "✗ 版本清理失败，仍有 $REMAINING_COUNT 个版本"
+            echo "版本清理失败，仍有 $REMAINING_COUNT 个版本，期望保留: $RETAIN_VERSIONS"
             exit 1
           fi
 ```
-
-**注意**: PR创建和自动合并逻辑已合并到 `ci-dev.yml` 中的 `create-pr` job，不再需要单独的workflow文件。
 
 ### 2. 配置说明
 
@@ -490,17 +512,18 @@ echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
 3. **ESA部署**: 清理完成后，ESA会自动检测main分支的变化并触发部署构建
 
 **简化流程优势：**
-- ✅ 去掉了复杂的dev分支和PR流程
-- ✅ 用户只需直接push到main分支
-- ✅ 自动清理版本后立即部署
-- ✅ 完全无需手动干预
+- 去掉了复杂的dev分支和PR流程
+- 用户只需直接push到main分支
+- 自动清理版本后立即部署
+- 完全无需手动干预
 
 ### 4. 注意事项
 
 - 确保RAM用户有足够的权限访问ESA服务
-- 清理策略保留最新的1个版本，删除所有较旧的版本
-- 如果清理过程中出现错误，整个CI流程会失败，不会进行合并
-- 可以根据需要调整保留的版本数量（修改脚本中的逻辑）
+- 清理策略保留最新的n个版本（可配置），删除所有较旧的版本
+- 如果清理过程中出现错误，整个CI流程会失败，ESA不会进行部署
+- 可以根据需要调整保留的版本数量（通过GitHub Variables配置）
+- 每次推送main分支都会触发清理，无需手动管理
 
 ### 5. 故障排除
 
@@ -516,9 +539,9 @@ echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
 - 当前用户是否有删除版本的权限
 - 网络连接是否正常
 
-#### 5.3 自动合并不工作
-如果PR没有自动合并，请检查：
-- 是否正确设置了auto-merge标签
-- GitHub Token权限是否正确
-- PR创建是否成功
+#### 5.3 ESA部署不触发
+如果推送main分支后ESA没有自动部署，请检查：
+- 清理workflow是否执行成功
+- ESA是否正确连接到GitHub仓库的main分支
+- GitHub和ESA之间的网络连接是否正常
 
