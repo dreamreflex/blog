@@ -29,6 +29,8 @@ npm run docs:dev
 2. 文章编写流程不建议加入formatter头部，这并不是因为formatter头部的技术性原因，而是博客应以快速迭代，快速编辑为主，formatter头部的编辑逻辑不符合随笔习惯，增加了额外的不必要开支。
 3. 使用ESA加速
 
+last update: 2025-12
+
 ## License
 
 MIT
