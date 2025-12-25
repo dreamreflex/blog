@@ -443,53 +443,7 @@ jobs:
           fi
 ```
 
-#### 1.2 自动合并配置文件 (dev-to-main.yml)
-
-```yaml
-name: Dev -> Main PR and Auto-merge
-
-on:
-  push:
-    branches: [ dev ]
-
-permissions:
-  contents: read
-  pull-requests: write
-
-jobs:
-  pr:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Create or update PR dev -> main
-        uses: peter-evans/create-pull-request@v6
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          base: main
-          branch: dev
-          title: "chore(CI): merge dev into main (after ESA version cleanup)"
-          body: |
-            Automated PR to merge dev into main.
-
-            This PR is created after successfully cleaning up old ESA versions to prevent deployment quota limits.
-          labels: auto-merge
-
-  enable_automerge:
-    needs: pr
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
-    steps:
-      - name: Enable auto-merge for PRs labeled auto-merge
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # 找到 dev->main 的 open PR，然后开启 auto-merge（merge commit，可改成 --squash）
-          PR_NUMBER=$(gh pr list --base main --head dev --state open --json number --jq '.[0].number')
-          if [ -n "$PR_NUMBER" ]; then
-            gh pr merge "$PR_NUMBER" --auto --merge
-          fi
-```
+**注意**: PR创建和自动合并逻辑已合并到 `ci-dev.yml` 中的 `create-pr` job，不再需要单独的workflow文件。
 
 ### 2. 配置说明
 
@@ -533,8 +487,8 @@ echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
 
 1. **开发阶段**: 在dev分支上进行开发和提交
 2. **自动清理**: 每次push到dev分支时，ci-dev.yml会自动触发，清理阿里云ESA的旧版本
-3. **创建PR**: dev-to-main.yml创建从dev到main的PR
-4. **自动合并**: 清理完成后，PR会自动合并到main分支
+3. **创建PR**: 清理成功后，ci-dev.yml会自动创建从dev到main的PR
+4. **自动合并**: PR创建后会自动启用自动合并功能
 5. **ESA构建**: 合并到main分支后，ESA会自动检测到main分支的变化并触发构建
 
 ### 4. 注意事项
