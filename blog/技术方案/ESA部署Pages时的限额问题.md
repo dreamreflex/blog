@@ -485,7 +485,7 @@ jobs:
 
 **1. 修改Pages名称**
 
-如需修改Pages名称，请在ci-dev.yml的"Get Pages Name"步骤中修改`pages_name`的值：
+如需修改Pages名称，请在clean-esa-main.yml的"Get Pages Name"步骤中修改`pages_name`的值：
 
 ```yaml
 echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
