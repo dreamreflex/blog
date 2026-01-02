@@ -1,0 +1,28 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import SearchComponent from '../components/react/Search';
+
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`Search - ${SITE_TITLE}`} description="Search blog posts" />
+		<style>
+			main {
+				width: 960px;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>Search Posts</h1>
+			<SearchComponent client:load />
+		</main>
+		<Footer />
+	</body>
+</html>

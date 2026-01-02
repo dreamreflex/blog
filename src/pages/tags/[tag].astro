@@ -1,0 +1,190 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
+import { SITE_TITLE } from '../../consts';
+import { resolveImage } from '../../utils/resolveImage';
+import { Image } from 'astro:assets';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog');
+  
+  // Extract all unique tags
+  const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))];
+
+  // Return a path for each tag
+  return uniqueTags.map((tag) => {
+    const filteredPosts = allPosts.filter((post) => 
+        post.data.tags && post.data.tags.includes(tag)
+    ).sort(
+	    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+    );
+    
+    return {
+      params: { tag },
+      props: { posts: filteredPosts },
+    };
+  });
+}
+
+const { tag } = Astro.params;
+const { posts } = Astro.props;
+
+// Resolve images for posts
+const postsWithImages = await Promise.all(posts.map(async (post) => ({
+	...post,
+	resolvedHeroImage: await resolveImage(post.data.heroImage)
+})));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`${tag} - ${SITE_TITLE}`} description={`Posts tagged with ${tag}`} />
+		<style>
+			main {
+				width: 100%;
+				max-width: 960px;
+				margin: 0 auto;
+			}
+            .page-header {
+                text-align: center;
+                margin-bottom: 2em;
+                padding-bottom: 1em;
+                border-bottom: 1px solid var(--gray-light);
+            }
+            .page-header h1 {
+                font-size: 2.5em;
+                margin-bottom: 0.2em;
+            }
+            .page-header span {
+                color: var(--accent);
+            }
+            .count {
+                color: var(--gray);
+                font-size: 1.1em;
+            }
+			ul {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 2rem;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+			}
+			ul li {
+				width: calc(50% - 1rem);
+			}
+			ul li * {
+				text-decoration: none;
+				transition: 0.2s ease;
+			}
+			ul li:first-child {
+				width: 100%;
+				margin-bottom: 1rem;
+				text-align: center;
+			}
+			ul li:first-child img {
+				width: 100%;
+			}
+			ul li:first-child .title {
+				font-size: 2.369rem;
+			}
+			ul li img {
+				margin-bottom: 0.5rem;
+				border-radius: 12px;
+			}
+			ul li a {
+				display: block;
+			}
+			.title {
+				margin: 0;
+				color: var(--text-heading);
+				line-height: 1;
+			}
+			.date {
+				margin: 0;
+				color: var(--gray);
+			}
+			.meta {
+				display: flex;
+				gap: 0.5em;
+				color: var(--gray);
+				font-size: 0.9em;
+			}
+			.tags {
+				display: flex;
+				gap: 0.5em;
+				margin-top: 0.5em;
+			}
+			.tag {
+				font-size: 0.8em;
+				background: var(--gray-light);
+				padding: 0.1em 0.4em;
+				border-radius: 4px;
+				color: var(--text-main);
+			}
+			ul li a:hover h4,
+			ul li a:hover .date {
+				color: var(--accent);
+			}
+			ul a:hover img {
+				box-shadow: var(--box-shadow);
+			}
+			@media (max-width: 720px) {
+				ul {
+					gap: 0.5em;
+				}
+				ul li {
+					width: 100%;
+					text-align: center;
+				}
+				ul li:first-child {
+					margin-bottom: 0;
+				}
+				ul li:first-child .title {
+					font-size: 1.563em;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+            <div class="page-header">
+                <h1>Posts tagged <span>#{tag}</span></h1>
+                <p class="count">{posts.length} {posts.length === 1 ? 'post' : 'posts'} found</p>
+            </div>
+			<section>
+				<ul>
+					{
+						postsWithImages.map((post) => (
+							<li>
+								<a href={`/blog/${post.id}/`}>
+									{post.resolvedHeroImage && (
+										<Image width={720} height={360} src={post.resolvedHeroImage} alt="" />
+									)}
+									<h4 class="title">{post.data.title}</h4>
+									<div class="meta">
+										<p class="date">
+											<FormattedDate date={post.data.pubDate} />
+										</p>
+										{post.data.editor && <span class="editor"> • Ed: {post.data.editor}</span>}
+									</div>
+									{post.data.tags && (
+										<div class="tags">
+											{post.data.tags.slice(0, 3).map((t) => <span class="tag">#{t}</span>)}
+										</div>
+									)}
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

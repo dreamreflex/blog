@@ -1,0 +1,74 @@
+name: Dev to Main CI/CD
+
+on:
+  push:
+    branches: [ dev ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  test-and-merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build test
+        run: npm run build
+
+      - name: Configure Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Merge dev to main
+        run: |
+          echo "构建测试通过，开始合并 dev 到 main 分支"
+
+          # 获取最新的分支状态
+          git fetch origin
+
+          # 检查 dev 分支是否有新的提交需要合并
+          if git diff --quiet origin/main..origin/dev; then
+            echo "main 分支已经是最新的，无需合并"
+            exit 0
+          fi
+
+          echo "发现新的提交需要合并到 main 分支"
+
+          # 切换到 main 分支并更新
+          git checkout main
+          git pull origin main
+
+          # 执行合并，使用 --no-ff 创建合并提交
+          MERGE_MESSAGE="Merge dev into main"$'\n'"Build tests passed"$'\n'"Auto-merged at $(date +'%Y-%m-%d %H:%M:%S UTC')"$'\n\n'"This merge was automatically triggered by successful CI/CD pipeline."
+
+          if git merge origin/dev --no-ff -m "$MERGE_MESSAGE"; then
+            echo "合并成功，正在推送..."
+            git push origin main
+            echo "成功合并 dev 到 main 分支！"
+          else
+            echo "合并失败，存在冲突"
+            git merge --abort
+            exit 1
+          fi
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "CI/CD 流程失败，请检查构建或合并问题"

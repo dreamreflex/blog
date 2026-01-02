@@ -1,0 +1,75 @@
+# Astrolab 项目规范与开发指南
+
+## 1. 项目概览
+
+Astrolab 是一个基于 [Astro](https://astro.build/) 构建的静态博客站点。
+- **核心框架**: Astro v5
+- **UI 组件**: 自定义 Astro 组件，集成 Lucide 图标
+- **样式**: 全局 CSS (Bear Blog 风格) + 局部 Scoped CSS
+- **内容管理**: Astro Content Collections (`src/content/`)
+- **功能模块**:
+  - **博客 (Blog)**: 传统的按时间排序的博文列表 (`src/content/blog`)
+  - **学习中心 (Learning Center)**: 结构化的知识库文档，支持多级目录树 (`src/content/learning`)
+
+## 2. 内容编写规范
+
+### 2.1 博客文章 (Blog) & 学习文档 (Learning)
+
+所有文章必须包含 Frontmatter 元数据。
+
+**Frontmatter 字段定义:**
+
+```yaml
+---
+title: "文章标题"                 # (必填) 字符串
+description: "简短的文章描述"       # (必填) 字符串，会在列表页显示
+pubDate: "YYYY-MM-DD"            # (必填) 发布日期
+updatedDate: "YYYY-MM-DD"        # (可选) 更新日期
+heroImage: "/path/to/image.jpg"  # (可选) 封面图路径，相对于 public/ 或 src/assets/
+tags: ["tag1", "tag2"]           # (可选) 标签数组，默认为 ['general']
+editor: "编辑者姓名"              # (可选) 责任编辑
+editorNote: "编者按内容"          # (可选) 编者按
+---
+```
+
+**编写规则:**
+1.  **封面图 (Hero Image)**: 
+    - 如果没有封面图，**不要**设置 `heroImage` 字段（不要留空字符串，直接省略或删除该字段）。
+    - 系统不会自动添加默认封面，也不会抓取正文图片作为封面。
+2.  **摘要 (Description)**: 
+    - 必须提供 `description`，它会显示在文章列表页的元信息下方。
+3.  **Markdown 特性**:
+    - 支持 GitHub Flavored Markdown。
+    - 支持数学公式 (KaTeX): 使用 `$E=mc^2$` (行内) 或 `$$...$$` (块级)。
+    - 支持 Mermaid 图表: 使用 ````mermaid` 代码块。
+    - 支持 MDX 组件。
+
+## 3. 代码与组件规范
+
+1.  **图标 (Icons)**:
+    - 使用 `astro-icon` 和 `lucide` 图标集。
+    - 引入方式: `import { Icon } from 'astro-icon/components';`
+    - 使用方式: `<Icon name="lucide:home" />`
+    - **禁止**直接使用内联 SVG 字符串，除非特殊情况。
+
+2.  **样式 (CSS)**:
+    - 尽量使用 scoped `<style>`。
+    - 全局变量定义在 `src/styles/global.css`。
+    - 字体大小已调整为更现代的紧凑风格 (Base: 16px)。
+
+3.  **目录结构**:
+    - `src/pages/blog/`: 博客列表与详情页。
+    - `src/pages/learning/`: 学习中心目录树与详情页。
+    - `src/components/`: 可复用组件 (Header, Footer, LearningTree 等)。
+
+## 4. 学习中心 (Learning Center) 特性
+
+- **目录结构**: `src/content/learning` 下的文件夹结构会自动映射为页面上的目录树。
+- **递归渲染**: 使用 `LearningTree.astro` 组件进行无限层级的目录渲染。
+- **新增文档**: 只需在 `src/content/learning` 下创建文件夹或 `.md` 文件，无需手动更新路由或目录配置。
+
+## 5. 常用命令
+
+- `npm run dev`: 启动开发服务器
+- `npm run build`: 构建生产版本
+- `npm run preview`: 预览构建产物

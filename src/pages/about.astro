@@ -1,0 +1,53 @@
+---
+import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
+import Layout from '../layouts/BlogPost.astro';
+---
+
+<Layout
+	title="关于云梦镜像博客"
+	description="Lorem ipsum dolor sit amet"
+	pubDate={new Date('August 08 2021')}
+	heroImage={AboutHeroImage.src}
+    tags={[]}
+>
+	<p>欢迎来到云梦镜像博客，这里存储了云梦镜像的博客文章。</p>
+
+	<h2>您可以在这里找到</h2>
+	<ol>
+		<li>技术解决方案思路</li>
+		<li>探索出的技术最佳实践</li>
+		<li>开放源代码相关项目</li>
+		<li>公开培训资料</li>
+		<li>便于所有人使用的一些学习资源</li>
+	</ol>
+
+	<h2>找不到您所需的内容？</h2>
+	<p>对于一些技术参数，产品文档，OpenAPI，二次开发与商业产品说明。
+	您需要移步至<a href="https://doc.dreamreflex.com" target="_blank" rel="noopener noreferrer">云梦镜像产品文档</a></p>
+
+	<h2>与文档站的区别</h2>
+	<p>
+		<a href="https://blog.dreamreflex.com" target="_blank" rel="noopener noreferrer">云梦镜像博客</a>与<a href="https://doc.dreamreflex.com" target="_blank" rel="noopener noreferrer">云梦镜像文档中心</a>的主要区别在于二者的保障力度不同。
+	</p>
+	<p>
+		博客是部署在Github，由免费加速服务进行CDN和托管的，我们不对博客站点的可用性和SLA做出任何承诺，站点也可能随时因为不可抗力、网络波动、内容审查力度等原因无法访问或服务中断。
+	</p>
+	<p>
+		文档中心是一项由云梦镜像团队进行规范化运维的项目，有着完善的部署流程、SLA、可用性、合规性和稳定性保障，有完整版权，且内容版本经过仔细审查，多服务商加速和失败降级策略。由于文档站与核心业务绑定程度较高，因此文档草稿、尚未发布的内容可能会现在博客中查看。
+	</p>
+
+	<h2>关于平台</h2>
+	<p>
+		平台托管在Github中，可以通过<a href="https://github.com/dreamreflex/blog" target="_blank" rel="noopener noreferrer">Github仓库</a>查看源码。
+	</p>
+	<p>
+		版权：如无特殊说明，文章内容采用<a href="https://creativecommons.org/licenses/by-nc/4.0/legalcode.zh-hans" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>
+	</p>
+	<p>
+		仓库许可证：仓库采用MIT许可，详见<a href="https://github.com/dreamreflex/blog" target="_blank" rel="noopener noreferrer">Github仓库</a>
+	</p>
+
+	<h2>关于贡献</h2>
+	<p>您可以在<a href="https://github.com/dreamreflex/blog" target="_blank" rel="noopener noreferrer">Github仓库</a>中提交贡献,仓库提供了便于您的AI Agent生成模板的提示词规则文件。</p>
+
+</Layout>

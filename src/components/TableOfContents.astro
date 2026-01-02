@@ -1,0 +1,141 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+	headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+// Filter out h1 (usually the title) and limit depth if needed
+const tocHeadings = headings.filter((heading) => heading.depth > 1 && heading.depth <= 3);
+---
+
+<nav class="toc">
+	<div class="toc-title">目录</div>
+	<ul>
+		{
+			tocHeadings.map((heading) => (
+				<li class={`toc-item depth-${heading.depth}`}>
+					<a href={`#${heading.slug}`}>{heading.text}</a>
+				</li>
+			))
+		}
+	</ul>
+</nav>
+
+<style>
+	.toc {
+		/* Sticky behavior handled by parent .toc-sidebar */
+		padding: 1rem;
+		border-left: 1px solid var(--gray-light);
+		max-height: calc(100vh - 4rem);
+		overflow-y: auto;
+		font-size: 0.85em; /* Reduced from 0.9em */
+		/* Ensure TOC scrolls independently */
+		overscroll-behavior: contain;
+	}
+
+	.toc-title {
+		font-weight: bold;
+		margin-bottom: 0.5rem;
+		font-size: 1em;
+		color: var(--text-heading);
+	}
+
+	ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	li {
+		margin-bottom: 0.5rem;
+	}
+
+	a {
+		text-decoration: none;
+		color: var(--gray);
+		display: block;
+		transition: color 0.2s, border-left 0.2s;
+		line-height: 1.4;
+	}
+
+	a:hover,
+	a.active {
+		color: var(--accent);
+	}
+
+	.depth-2 {
+		padding-left: 0;
+	}
+
+	.depth-3 {
+		padding-left: 1rem;
+		font-size: 0.9em;
+	}
+	
+	/* Scrollbar styling */
+	.toc::-webkit-scrollbar {
+		width: 4px;
+	}
+	.toc::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.toc::-webkit-scrollbar-thumb {
+		background: var(--gray-light);
+		border-radius: 2px;
+	}
+	.toc::-webkit-scrollbar-thumb:hover {
+		background: var(--gray);
+	}
+</style>
+
+<script>
+	document.addEventListener('astro:page-load', () => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					const id = entry.target.getAttribute('id');
+					if (entry.isIntersecting) {
+						document.querySelectorAll('.toc a').forEach((link) => {
+							link.classList.remove('active');
+						});
+						const activeLink = document.querySelector(`.toc a[href="#${id}"]`);
+						if (activeLink) {
+							activeLink.classList.add('active');
+						}
+					}
+				});
+			},
+			{ rootMargin: '-100px 0px -66%' }
+		);
+
+		document.querySelectorAll('h2, h3').forEach((heading) => {
+			observer.observe(heading);
+		});
+	});
+	
+	// Initial run for non-SPA navigation or first load
+	const observer = new IntersectionObserver(
+		(entries) => {
+			entries.forEach((entry) => {
+				const id = entry.target.getAttribute('id');
+				if (entry.isIntersecting) {
+					document.querySelectorAll('.toc a').forEach((link) => {
+						link.classList.remove('active');
+					});
+					const activeLink = document.querySelector(`.toc a[href="#${id}"]`);
+					if (activeLink) {
+						activeLink.classList.add('active');
+					}
+				}
+			});
+		},
+		{ rootMargin: '-100px 0px -66%' }
+	);
+
+	document.querySelectorAll('h2, h3').forEach((heading) => {
+		observer.observe(heading);
+	});
+</script>

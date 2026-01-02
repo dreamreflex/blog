@@ -1,0 +1,227 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../components/FormattedDate.astro';
+import { resolveImage } from '../utils/resolveImage';
+import { Image } from 'astro:assets';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Get unique tags
+const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
+const latestPosts = posts.slice(0, 3); // Top 3 posts
+
+const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => ({
+	...post,
+	resolvedHeroImage: await resolveImage(post.data.heroImage)
+})));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 100%;
+				max-width: 960px;
+				margin: 0 auto;
+			}
+			/* Hero Section */
+			.hero {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				text-align: center;
+				padding: 4em 0;
+				background-color: #f9f9f9;
+				border-radius: 8px;
+				margin-bottom: 2em;
+			}
+			.hero-logo {
+				width: 120px;
+				height: 120px;
+				margin-bottom: 1em;
+				color: var(--accent);
+			}
+			.hero h1 {
+				font-size: 2.5em;
+				margin: 0.5em 0;
+			}
+			.hero p {
+				font-size: 1.2em;
+				color: #555;
+				max-width: 600px;
+			}
+
+			/* Categories Section */
+			.section-title {
+				font-size: 1.5em;
+				margin-bottom: 1em;
+				border-bottom: 2px solid var(--accent);
+				display: inline-block;
+				padding-bottom: 0.2em;
+			}
+			.categories-container {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 1em;
+				margin-bottom: 3em;
+				justify-content: center;
+			}
+			.category-tag {
+				background-color: #e0e0e0;
+				padding: 0.5em 1em;
+				border-radius: 20px;
+				text-decoration: none;
+				color: #333;
+				font-weight: bold;
+				transition: background-color 0.2s;
+				text-transform: capitalize;
+			}
+			.category-tag:hover {
+				background-color: var(--accent);
+				color: white;
+			}
+
+			/* Latest Articles Section */
+			.latest-posts {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+				gap: 2rem;
+				list-style-type: none;
+				padding: 0;
+			}
+			.post-card {
+				background: white;
+				border: 1px solid #eee;
+				border-radius: 8px;
+				overflow: hidden;
+				transition: transform 0.2s;
+				box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+			}
+			.post-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+			}
+			.post-card a {
+				text-decoration: none;
+				color: inherit;
+				display: block;
+			}
+			.post-card img {
+				width: 100%;
+				height: 200px;
+				object-fit: cover;
+			}
+			.post-content {
+				padding: 1.5em;
+			}
+			.post-title {
+				margin: 0 0 0.5em 0;
+				font-size: 1.5rem;
+				color: var(--black);
+			}
+			.post-date {
+				color: #888;
+				font-size: 0.9em;
+				display: inline-block;
+			}
+			.post-meta {
+				margin-bottom: 0.5em;
+				font-size: 0.9em;
+				color: #888;
+			}
+			.post-tags {
+				display: flex;
+				gap: 0.5rem;
+				margin-bottom: 0.5em;
+			}
+			.mini-tag {
+				font-size: 0.75em;
+				background: #eee;
+				padding: 0.1rem 0.4rem;
+				border-radius: 4px;
+				color: #555;
+			}
+			.post-desc {
+				color: #666;
+				line-height: 1.5;
+			}
+
+			@media (max-width: 720px) {
+				.hero {
+					padding: 2em 1em;
+				}
+				.latest-posts {
+					grid-template-columns: 1fr;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<!-- 1. Intro + Logo -->
+			<section class="hero">
+				<img src="/logo.svg" alt="Logo" class="hero-logo" />
+				<h1>{SITE_TITLE}</h1>
+				<p>
+					欢迎来到云梦镜像博客，你可以在这里找到实践方案，解决方案和技术说明等内容。
+					<br>
+					如果您需要参考产品文档和技术参数，请移步<a href="https://doc.dreamreflex.com">云梦镜像文档</a>
+				</p>
+			</section>
+
+			<!-- 2. Categories -->
+			<section>
+				<h2 class="section-title">探索分类</h2>
+				<div class="categories-container">
+					{tags.map((tag) => (
+						<a href={`/tags/${tag}`} class="category-tag">#{tag}</a>
+					))}
+					{tags.length === 0 && <p>未找到分类。</p>}
+				</div>
+			</section>
+
+			<!-- 3. Latest Articles -->
+			<section>
+				<h2 class="section-title">最新文章</h2>
+				<ul class="latest-posts">
+					{latestPostsWithImages.map((post) => (
+						<li class="post-card">
+							<a href={`/blog/${post.id}/`}>
+								{post.resolvedHeroImage && <Image width={720} height={360} src={post.resolvedHeroImage} alt="" />}
+								<div class="post-content">
+									<h3 class="post-title">{post.data.title}</h3>
+									<div class="post-meta">
+										<span class="post-date">
+											<FormattedDate date={post.data.pubDate} />
+										</span>
+										{post.data.editor && (
+											<span class="post-editor"> | Ed: {post.data.editor}</span>
+										)}
+									</div>
+									{post.data.tags && post.data.tags.length > 0 && (
+										<div class="post-tags">
+											{post.data.tags.slice(0, 3).map(tag => (
+												<span class="mini-tag">#{tag}</span>
+											))}
+										</div>
+									)}
+									<p class="post-desc">{post.data.description}</p>
+								</div>
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

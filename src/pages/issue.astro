@@ -1,0 +1,82 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title={`报告问题 - ${SITE_TITLE}`} description="提交反馈或报告 Bug" />
+		<style>
+			main {
+				width: 100%;
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 3rem 1rem;
+			}
+			.issue-container {
+				background: #fcfcfd;
+				padding: 2rem;
+				border-radius: 8px;
+				border: 1px solid #eee;
+			}
+			h1 {
+				margin-bottom: 1.5rem;
+			}
+			.option-card {
+				background: white;
+				padding: 1.5rem;
+				border-radius: 8px;
+				margin-bottom: 1.5rem;
+				box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+				transition: transform 0.2s;
+			}
+			.option-card:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+			}
+			.option-card h3 {
+				margin-top: 0;
+				color: var(--accent);
+			}
+			.btn {
+				display: inline-block;
+				background-color: var(--accent);
+				color: white;
+				padding: 0.5rem 1rem;
+				text-decoration: none;
+				border-radius: 4px;
+				margin-top: 1rem;
+				font-weight: bold;
+			}
+			.btn:hover {
+				background-color: var(--accent-dark);
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<h1>报告问题与反馈</h1>
+			<p>如果您在使用过程中遇到任何问题，或有改进建议，请通过以下方式告诉我们。</p>
+			
+			<div class="issue-container">
+				<div class="option-card">
+					<h3>提交 Bug</h3>
+					<p>如果您发现了程序错误或显示异常，请在 GitHub 上提交 Issue。</p>
+					<a href="https://github.com/dreamreflex/blog/issues" target="_blank" class="btn">前往 GitHub Issues</a>
+				</div>
+
+				<div class="option-card">
+					<h3>邮件联系</h3>
+					<p>如果您有其他问题或不便使用 GitHub，可以直接发送邮件给我们。</p>
+					<a href="mailto:phil616@163.com" class="btn">发送邮件</a>
+				</div>
+
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

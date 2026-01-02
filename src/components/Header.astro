@@ -1,0 +1,220 @@
+---
+import HeaderLink from './HeaderLink.astro';
+import ThemeToggle from './ThemeToggle.astro';
+import { SITE_TITLE } from '../consts';
+import { Icon } from 'astro-icon/components';
+---
+
+<header>
+	<div class="top-bar">
+		<a href="/" class="logo">
+			<img src="/logo.svg" alt="Logo" width="40" height="40" />
+			<span>{SITE_TITLE}</span>
+		</a>
+		<div class="header-controls">
+			<div class="external-links">
+				<a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+					<Icon name="lucide:twitter" width="20" height="20" />
+				</a>
+				<a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+					<Icon name="lucide:github" width="20" height="20" />
+				</a>
+				<a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+					<Icon name="lucide:linkedin" width="20" height="20" />
+				</a>
+			</div>
+			<ThemeToggle />
+			<div class="subscribe-box">
+				<input type="email" placeholder="输入邮箱..." />
+				<button type="button">订阅</button>
+			</div>
+		</div>
+	</div>
+	<nav>
+		<div class="nav-spacer"></div>
+		<div class="internal-links">
+			<HeaderLink href="/">首页</HeaderLink>
+			<HeaderLink href="/blog">博客</HeaderLink>
+			<HeaderLink href="/learning">学习中心</HeaderLink>
+			<HeaderLink href="/archive">归档</HeaderLink>
+			<HeaderLink href="/about">关于</HeaderLink>
+		</div>
+		<div class="nav-search">
+			<a href="/search" aria-label="搜索">
+				<Icon name="lucide:search" width="24" height="24" />
+			</a>
+		</div>
+	</nav>
+</header>
+
+<style>
+	header {
+		margin: 0;
+		background: var(--background-body);
+		box-shadow: 0 2px 8px rgba(0,0,0, 5%);
+		color: var(--text-main);
+	}
+	
+	.top-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1em;
+		border-bottom: 1px solid var(--gray-light);
+	}
+
+	.logo-container {
+		display: none;
+	}
+
+	.logo {
+		display: flex;
+		align-items: center;
+		gap: 0.5em;
+		text-decoration: none;
+		color: var(--text-heading);
+		font-weight: bold;
+		font-size: 1.5em;
+	}
+
+	.logo svg {
+		color: var(--accent);
+	}
+
+	.header-controls {
+		display: flex;
+		gap: 1em;
+		align-items: center;
+	}
+
+	.subscribe-box {
+		display: flex;
+		gap: 0.5em;
+		align-items: center;
+	}
+
+	.search-icon {
+		display: flex;
+		align-items: center;
+		color: var(--text-heading);
+		margin-right: 0.5em;
+		transition: color 0.2s;
+	}
+
+	.search-icon:hover {
+		color: var(--accent);
+	}
+
+	.subscribe-box input {
+		padding: 0.5em;
+		border: 1px solid var(--gray);
+		border-radius: 4px;
+		background: var(--background-body);
+		color: var(--text-main);
+	}
+
+	.subscribe-box button {
+		padding: 0.5em 1em;
+		background-color: var(--accent);
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.subscribe-box button:hover {
+		background-color: var(--accent-dark);
+	}
+
+	nav {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		padding: 0.5em 1em;
+	}
+
+	.internal-links {
+		display: flex;
+		gap: 0.5em;
+		justify-self: center;
+		background: rgba(var(--gray-light), 0.2);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
+		padding: 0.3em;
+		border-radius: 12px;
+		border: 1px solid rgba(128, 128, 128, 0.1);
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+	}
+
+	.nav-search {
+		justify-self: end;
+	}
+
+	.nav-search a {
+		display: flex;
+		color: var(--text-heading);
+		transition: color 0.2s;
+	}
+
+	.nav-search a:hover {
+		color: var(--accent);
+	}
+
+	.external-links {
+		display: flex;
+		gap: 0.8em;
+	}
+
+	.external-links a {
+		color: var(--text-heading);
+		transition: color 0.2s;
+		display: flex;
+		align-items: center;
+	}
+
+	.external-links a:hover {
+		color: var(--accent);
+	}
+
+	@media (max-width: 720px) {
+		.top-bar {
+			flex-direction: column;
+			gap: 1em;
+			text-align: center;
+		}
+		.header-controls {
+			width: 100%;
+			flex-direction: column;
+			gap: 1em;
+		}
+		.subscribe-box {
+			width: 100%;
+			justify-content: center;
+		}
+		.subscribe-box input {
+			max-width: 200px;
+		}
+		nav {
+			display: flex;
+			flex-direction: column;
+			gap: 1em;
+		}
+		.nav-spacer {
+			display: none;
+		}
+		.external-links {
+			justify-content: center;
+			margin-bottom: 1em;
+		}
+		.internal-links {
+			width: 100%;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+		.nav-search {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+		}
+	}
+</style>

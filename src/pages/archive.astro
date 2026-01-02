@@ -1,0 +1,154 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../consts';
+import FormattedDate from '../components/FormattedDate.astro';
+
+const posts = (await getCollection('blog')).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Group posts by year
+const postsByYear = posts.reduce((acc, post) => {
+	const year = post.data.pubDate.getFullYear();
+	if (!acc[year]) {
+		acc[year] = [];
+	}
+	acc[year].push(post);
+	return acc;
+}, {} as Record<number, typeof posts>);
+
+const years = Object.keys(postsByYear).map(Number).sort((a, b) => b - a);
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`归档 - ${SITE_TITLE}`} description="所有文章归档" />
+		<style>
+			main {
+				width: 100%;
+				max-width: 960px;
+				margin: 0 auto;
+			}
+            .archive-container {
+                padding: 1em 0;
+            }
+            .year-group {
+                margin-bottom: 2em;
+            }
+            .year-title {
+                font-size: 1.8em;
+                margin-bottom: 0.5em;
+                color: var(--text-heading);
+                border-bottom: 2px solid var(--gray-light);
+                padding-bottom: 0.2em;
+            }
+            .post-list {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+            .post-item {
+                display: flex;
+                align-items: baseline;
+                padding: 0.5em 0;
+                border-bottom: 1px dashed var(--gray-light);
+            }
+            .post-item:last-child {
+                border-bottom: none;
+            }
+            .post-date {
+                width: 120px;
+                color: var(--gray);
+                font-family: monospace;
+                font-size: 0.9em;
+                flex-shrink: 0;
+            }
+            .post-title {
+                flex-grow: 1;
+            }
+            .post-title a {
+                text-decoration: none;
+                color: var(--text-heading);
+                font-size: 1.1em;
+                transition: color 0.2s;
+            }
+            .post-title a:hover {
+                color: var(--accent);
+            }
+            .post-tags {
+                margin-left: 1em;
+                display: flex;
+                gap: 0.5em;
+            }
+            .tag {
+                font-size: 10px;
+                background: var(--gray-light);
+                color: var(--text-main);
+                padding: 2px 6px;
+                border-radius: 99px;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                border: 1px solid rgba(var(--gray), 0.2);
+                vertical-align: middle;
+                line-height: 1;
+                display: inline-block;
+            }
+            .tag:hover {
+                background: var(--accent);
+                color: white;
+                border-color: var(--accent);
+            }
+            @media (max-width: 600px) {
+                .post-item {
+                    flex-direction: column;
+                    gap: 0.2em;
+                }
+                .post-date {
+                    width: auto;
+                }
+                .post-tags {
+                    margin-left: 0;
+                    margin-top: 0.2em;
+                }
+            }
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+            <div class="archive-container">
+                <h1>归档</h1>
+                
+                {years.map(year => (
+                    <div class="year-group">
+                        <h2 class="year-title">{year}</h2>
+                        <ul class="post-list">
+                            {postsByYear[year].map(post => (
+                                <li class="post-item">
+                                    <span class="post-date">
+                                        <FormattedDate date={post.data.pubDate} />
+                                    </span>
+                                    <div class="post-title">
+                                        <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+                                        {post.data.tags && post.data.tags.length > 0 && (
+                                            <span class="post-tags">
+                                                {post.data.tags.map(tag => (
+                                                    <a href={`/tags/${tag}`} class="tag">#{tag}</a>
+                                                ))}
+                                            </span>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
+            </div>
+		</main>
+		<Footer />
+	</body>
+</html>

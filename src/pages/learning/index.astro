@@ -1,0 +1,128 @@
+---
+import { getCollection } from 'astro:content';
+import BaseHead from '../../components/BaseHead.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+
+import LearningTree from '../../components/LearningTree.astro';
+
+const posts = await getCollection('learning');
+
+// Build directory tree
+const tree: Record<string, any> = {};
+
+posts.forEach((post) => {
+	const parts = post.id.split('/');
+	let current = tree;
+	
+	parts.forEach((part, index) => {
+		if (index === parts.length - 1) {
+			// File
+			current[part] = {
+				type: 'file',
+				data: post,
+				name: part
+			};
+		} else {
+			// Directory
+			if (!current[part]) {
+				current[part] = {
+					type: 'directory',
+					children: {},
+					name: part
+				};
+			}
+			current = current[part].children;
+		}
+	});
+});
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`学习中心 - ${SITE_TITLE}`} description={SITE_DESCRIPTION} />
+		<style>
+			main {
+				width: 100%;
+				max-width: 960px;
+				margin: 0 auto;
+				padding: 3rem 1rem;
+			}
+			/* Styling handled in LearningTree component or global styles */
+			:global(.learning-tree) {
+				font-size: 1.1em;
+			}
+			:global(.learning-tree ul) {
+				list-style: none;
+				padding-left: 1.5em;
+				margin: 0.5em 0;
+			}
+			:global(.learning-tree > ul) {
+				padding-left: 0;
+			}
+			:global(.learning-tree li) {
+				margin: 0.5em 0;
+			}
+			:global(.learning-tree summary) {
+				cursor: pointer;
+				padding: 0.2em 0.5em;
+				border-radius: 4px;
+				transition: background-color 0.2s;
+				user-select: none;
+				font-weight: bold;
+				color: var(--text-heading);
+			}
+			:global(.learning-tree summary:hover) {
+				background-color: var(--gray-light);
+			}
+			:global(.learning-tree a) {
+				display: inline-flex;
+				align-items: center;
+				padding: 0.2em 0.5em;
+				border-radius: 4px;
+				text-decoration: none;
+				color: var(--text-main);
+				transition: all 0.2s;
+			}
+			:global(.learning-tree a:hover) {
+				background-color: var(--gray-light);
+				color: var(--accent);
+			}
+			:global(.icon) {
+				margin-right: 0.5em;
+				display: inline-block;
+				width: 1.2em;
+				text-align: center;
+			}
+			.page-header {
+				margin-bottom: 2rem;
+				padding-bottom: 1rem;
+				border-bottom: 1px solid var(--gray-light);
+			}
+			.page-header h1 {
+				margin: 0;
+			}
+			.page-header p {
+				color: var(--gray);
+				margin-top: 0.5rem;
+			}
+		</style>
+	</head>
+	<body>
+		<Header />
+		<main>
+			<div class="page-header">
+				<h1>学习中心</h1>
+				<p>知识库与教程文档</p>
+			</div>
+			<div class="learning-tree">
+				<ul>
+					<LearningTree nodes={Object.values(tree)} />
+				</ul>
+			</div>
+		</main>
+		<Footer />
+	</body>
+</html>

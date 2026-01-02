@@ -1,0 +1,236 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import FormattedDate from '../components/FormattedDate.astro';
+import Header from '../components/Header.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import ImagePreview from '../components/ImagePreview.astro';
+import type { MarkdownHeading } from 'astro';
+
+import { resolveImage } from '../utils/resolveImage';
+
+type Props = CollectionEntry<'blog'>['data'] & {
+	headings?: MarkdownHeading[];
+};
+
+const { title, description, pubDate, updatedDate, heroImage, editor, editorNote, tags, headings } = Astro.props;
+
+const resolvedHeroImage = await resolveImage(heroImage);
+---
+
+<html lang="en">
+	<head>
+		<BaseHead title={title} description={description} />
+		<style>
+			main {
+				width: 100%;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 1rem;
+			}
+			.content-wrapper {
+				display: flex;
+				gap: 2rem;
+				position: relative;
+				align-items: flex-start;
+				margin-top: 2rem; /* Add top margin to separate from header */
+			}
+			article {
+				flex: 1;
+				min-width: 0; /* Prevent flex item from overflowing */
+			}
+			.toc-sidebar {
+				width: 250px;
+				flex-shrink: 0;
+				display: none;
+				position: sticky; /* Sticky sidebar container */
+				top: 2rem; /* Stick closer to top, under header */
+				align-self: flex-start; /* Ensure it stays at the top of the flex container */
+				height: fit-content; /* Allow content to dictate height */
+				max-height: calc(100vh - 4rem); /* Prevent overflowing viewport */
+			}
+			@media (min-width: 1100px) {
+				.toc-sidebar {
+					display: block;
+				}
+			}
+			.hero-image {
+				width: 100%;
+			}
+			.hero-image img {
+				display: block;
+				margin: 0 auto;
+				border-radius: 12px;
+				box-shadow: var(--box-shadow);
+				max-width: 100%;
+				height: auto;
+			}
+			.prose {
+				width: 720px;
+				max-width: calc(100% - 2em);
+				margin: auto;
+				padding: 1em;
+				color: rgb(var(--gray-dark));
+			}
+			.title {
+				margin-bottom: 1em;
+				padding: 1em 0;
+				text-align: center;
+				line-height: 1;
+			}
+			.title h1 {
+				margin: 0 0 0.5em 0;
+			}
+			.date {
+				margin-bottom: 0.5em;
+				color: rgb(var(--gray));
+			}
+			.last-updated-on {
+				font-style: italic;
+			}
+			.tags {
+				margin-bottom: 0.5em;
+			}
+			.tag {
+				display: inline-block;
+				margin-right: 0.5em;
+				font-size: 0.8em;
+				color: var(--text-main);
+				background-color: var(--gray-light);
+				padding: 0.2em 0.8em;
+				border-radius: 99px;
+				text-decoration: none;
+				transition: all 0.2s ease;
+				border: 1px solid rgba(var(--gray), 0.2);
+			}
+			.tag:hover {
+				background-color: var(--accent);
+				color: white;
+				border-color: var(--accent);
+			}
+			.editor-info {
+				margin-top: 0.5em;
+				font-size: 0.95em;
+				color: rgb(var(--gray));
+			}
+			.editor-note {
+				margin-top: 1em;
+				padding: 1em;
+				background-color: #f9f9f9;
+				border-left: 4px solid var(--accent);
+				font-size: 0.95em;
+				color: #555;
+				text-align: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<ReadingProgress />
+		<Header />
+		<main>
+			<div class="content-wrapper">
+				<article>
+					<div class="hero-image">
+						{resolvedHeroImage && <Image width={1020} height={510} src={resolvedHeroImage} alt="" />}
+					</div>
+					<div class="prose">
+						<div class="title">
+							<div class="date">
+								<FormattedDate date={pubDate} />
+								{
+									updatedDate && (
+										<div class="last-updated-on">
+											最后更新于 <FormattedDate date={updatedDate} />
+										</div>
+									)
+								}
+							</div>
+							{
+								tags && tags.length > 0 && (
+									<div class="tags">
+										{tags.map((tag) => <a href={`/tags/${tag}`} class="tag">#{tag}</a>)}
+									</div>
+								)
+							}
+							<h1>{title}</h1>
+							{
+								editor && (
+									<div class="editor-info">
+										<span class="editor-label">编辑:</span> {editor}
+									</div>
+								)
+							}
+							{
+								editorNote && (
+									<div class="editor-note">
+										<strong>编者按:</strong> {editorNote}
+									</div>
+								)
+							}
+							<hr />
+						</div>
+						<slot />
+					</div>
+				</article>
+				{headings && headings.length > 0 && (
+					<aside class="toc-sidebar">
+						<TableOfContents headings={headings} />
+					</aside>
+				)}
+			</div>
+		</main>
+		<Footer />
+		<ImagePreview />
+
+		<script type="module" is:inline>
+			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+			
+			// Initialize mermaid
+			mermaid.initialize({ 
+				startOnLoad: false,
+				theme: 'default' 
+			});
+
+			function renderMermaid() {
+				// Find all code blocks with language-mermaid
+				// Astro's Shiki might put data-language="mermaid" on the pre
+				const graphs = document.querySelectorAll('pre > code.language-mermaid, pre[data-language="mermaid"]');
+				
+				graphs.forEach((graph) => {
+					// If it's the pre element (from data-language selector), get text content directly
+					// If it's the code element, get text content
+					const content = graph.tagName === 'PRE' ? graph.querySelector('code')?.textContent || graph.textContent : graph.textContent;
+					
+					// Get the element to replace (the pre)
+					const pre = graph.tagName === 'PRE' ? graph : graph.parentElement;
+					
+					// Create a new div for mermaid
+					const div = document.createElement('div');
+					div.classList.add('mermaid');
+					div.textContent = content;
+					
+					// Replace the pre with the new div
+					if (pre) {
+						pre.replaceWith(div);
+					}
+				});
+
+				// Run mermaid on the new divs
+				const mermaidDivs = document.querySelectorAll('.mermaid');
+				if (mermaidDivs.length > 0) {
+					mermaid.run({ nodes: mermaidDivs });
+				}
+			}
+
+			// Render on initial load
+			renderMermaid();
+
+			// Support for view transitions if they are enabled in the future
+			document.addEventListener('astro:page-load', renderMermaid);
+		</script>
+	</body>
+</html>

@@ -1,0 +1,123 @@
+/* Search Container */
+.search-wrapper {
+    width: 100%;
+}
+
+.search-container {
+    margin: 2rem 0;
+    text-align: center;
+}
+
+#search-input {
+    width: 100%;
+    max-width: 600px;
+    padding: 1rem;
+    font-size: 1.2rem;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+#search-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 4px 8px rgba(var(--accent), 0.2);
+}
+
+/* Results Grid */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+/* Post Card */
+.post-card {
+    background: white;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.post-card a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.post-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.post-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: rgb(var(--black));
+    line-height: 1.2;
+}
+
+.post-date {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.post-desc {
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+.no-results {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 3rem;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.loading-msg {
+    text-align: center;
+    color: #666;
+    margin-top: 2rem;
+    font-style: italic;
+}
