@@ -1,3 +1,4 @@
+# 自动将 dev 分支合并到 main 分支
 name: Dev to Main CI/CD
 
 on:
