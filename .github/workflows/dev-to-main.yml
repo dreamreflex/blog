@@ -66,7 +66,7 @@ jobs:
           git pull origin main
 
           # 执行合并，使用 --no-ff 创建合并提交
-          MERGE_MESSAGE="Merge dev into main"$'\n'"Build tests passed"$'\n'"Auto-merged at $(date +'%Y-%m-%d %H:%M:%S UTC')"$'\n\n'"This merge was automatically triggered by successful CI/CD pipeline."
+          MERGE_MESSAGE="chore(ci): auto-merge dev into main"$'\n'"Build tests passed"$'\n'"Auto-merged at $(date +'%Y-%m-%d %H:%M:%S UTC')"$'\n\n'"This merge was automatically triggered by successful CI/CD pipeline."
 
           if git merge origin/dev --no-ff -m "$MERGE_MESSAGE"; then
             echo "合并成功，正在推送..."
