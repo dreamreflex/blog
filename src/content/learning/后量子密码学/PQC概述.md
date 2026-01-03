@@ -3,7 +3,7 @@ order: 1
 title: '关于PQC'
 description: 'PQC 是后量子密码学的缩写，指在量子计算机出现后仍然安全的密码算法体系。'
 pubDate: '2026-01-01'
-tags: []
+tags: ['PQC']
 ---
 # 关于PQC
 
