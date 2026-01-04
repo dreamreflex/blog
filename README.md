@@ -6,6 +6,7 @@
 
 该网站部署在[dreamreflex-blog](https://blog.dreamreflex.com)
 
+运维人员在[ESA Console](https://esa.console.aliyun.com/edge/pages/detail/blog/version)查看构建情况。
 
 特性：
 
