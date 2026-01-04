@@ -9,19 +9,30 @@ import { resolveImage } from '../../utils/resolveImage';
 import { Image } from 'astro:assets';
 
 export async function getStaticPaths() {
-  const allPosts = await getCollection('blog');
-  
-  // Extract all unique tags
-  const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags || []))];
+  const blogPosts = await getCollection('blog');
+  const learningPosts = await getCollection('learning');
+
+  // Extract all unique tags from both collections
+  const blogTags = blogPosts.flatMap((post) => post.data.tags || []);
+  const learningTags = learningPosts.flatMap((post) => post.data.tags || []);
+  const uniqueTags = [...new Set([...blogTags, ...learningTags])];
 
   // Return a path for each tag
   return uniqueTags.map((tag) => {
-    const filteredPosts = allPosts.filter((post) => 
+    // Filter posts from both collections that have this tag
+    const blogFiltered = blogPosts.filter((post) =>
         post.data.tags && post.data.tags.includes(tag)
-    ).sort(
+    ).map(post => ({ ...post, collection: 'blog' }));
+
+    const learningFiltered = learningPosts.filter((post) =>
+        post.data.tags && post.data.tags.includes(tag)
+    ).map(post => ({ ...post, collection: 'learning' }));
+
+    // Combine and sort by publication date
+    const filteredPosts = [...blogFiltered, ...learningFiltered].sort(
 	    (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
     );
-    
+
     return {
       params: { tag },
       props: { posts: filteredPosts },
@@ -42,7 +53,7 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 <!doctype html>
 <html lang="en">
 	<head>
-		<BaseHead title={`${tag} - ${SITE_TITLE}`} description={`Posts tagged with ${tag}`} />
+		<BaseHead title={`${tag} - ${SITE_TITLE}`} description={`Articles tagged with ${tag} from blog and learning center`} />
 		<style>
 			main {
 				width: 100%;
@@ -114,6 +125,10 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 				color: var(--gray);
 				font-size: 0.9em;
 			}
+			.collection {
+				font-weight: 500;
+				color: var(--accent);
+			}
 			.tags {
 				display: flex;
 				gap: 0.5em;
@@ -154,15 +169,20 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 		<Header />
 		<main>
             <div class="page-header">
-                <h1>Posts tagged <span>#{tag}</span></h1>
-                <p class="count">{posts.length} {posts.length === 1 ? 'post' : 'posts'} found</p>
+                <h1>Articles tagged <span>#{tag}</span></h1>
+                <p class="count">{posts.length} {posts.length === 1 ? 'article' : 'articles'} found</p>
             </div>
 			<section>
 				<ul>
 					{
-						postsWithImages.map((post) => (
+						postsWithImages.map((post) => {
+							const postUrl = post.collection === 'blog'
+								? `/blog/${post.id}/`
+								: `/learning/${post.id}/`;
+
+							return (
 							<li>
-								<a href={`/blog/${post.id}/`}>
+								<a href={postUrl}>
 									{post.resolvedHeroImage && (
 										<Image width={720} height={360} src={post.resolvedHeroImage} alt="" />
 									)}
@@ -171,6 +191,7 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 										<p class="date">
 											<FormattedDate date={post.data.pubDate} />
 										</p>
+										<span class="collection"> • {post.collection === 'blog' ? '博客' : '学习中心'}</span>
 										{post.data.editor && <span class="editor"> • Ed: {post.data.editor}</span>}
 									</div>
 									{post.data.tags && (
@@ -180,7 +201,8 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 									)}
 								</a>
 							</li>
-						))
+							);
+						})
 					}
 				</ul>
 			</section>
