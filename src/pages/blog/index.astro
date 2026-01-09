@@ -57,7 +57,8 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 				margin-bottom: 0.5rem;
 				border-radius: 12px;
 				width: 100%;
-				height: auto;
+				height: 200px;
+				object-fit: cover;
 				display: block;
 			}
 
@@ -65,55 +66,58 @@ const postsWithImages = await Promise.all(posts.map(async (post) => ({
 			ul li a {
 				display: block;
 				height: 100%;
-				padding: 1rem; /* Add padding inside the card */
+				padding: 1.5rem; /* Match index.astro padding */
+				text-decoration: none;
+				color: inherit;
 			}
 			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
+				margin: 0 0 0.5rem 0;
+				color: var(--text-heading);
+				line-height: 1.2;
+				font-size: 1.5rem;
+				font-weight: 700;
 			}
 			.date {
 				margin: 0;
-				color: rgb(var(--gray));
+				color: var(--text-muted);
 			}
 			.meta {
 				display: flex;
 				gap: 0.5em;
-				color: rgb(var(--gray));
+				color: var(--text-muted);
 				font-size: 0.9em;
+				margin-bottom: 0.5em;
 			}
 			.tags {
 				display: flex;
-				gap: 0.5em;
+				gap: 0.5rem;
 				margin-top: 0.5em;
 			}
 			.tag {
-				font-size: 0.7em;
-				background: var(--gray-light);
-				padding: 0.2em 0.6em;
-				border-radius: 99px;
-				color: var(--text-main);
+				font-size: 0.75em;
+				background: var(--tag-bg);
+				padding: 0.1rem 0.4rem;
+				border-radius: 4px;
+				color: var(--tag-text);
 				transition: all 0.2s ease;
-				border: 1px solid rgba(var(--gray), 0.2);
+				text-decoration: none;
 			}
 			.tag:hover {
 				background: var(--accent);
 				color: white;
-				border-color: var(--accent);
 			}
 			.description {
-				margin: 0.5em 0 0 0;
-				font-size: 0.9em;
-				color: var(--text-main);
-				opacity: 0.9;
+				margin: 0;
+				font-size: 1rem;
+				color: var(--text-secondary);
+				line-height: 1.5;
 			}
-			ul li a:hover h4,
+			ul li a:hover .title,
 			ul li a:hover .date {
-				color: rgb(var(--accent));
+				color: inherit; /* SpotlightCard handles hover effects differently or relies on child hover */
 			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
+			/* Override SpotlightCard internal link hover if needed, or rely on card hover */
+			
 			@media (max-width: 720px) {
 				ul {
 					gap: 0.5em;

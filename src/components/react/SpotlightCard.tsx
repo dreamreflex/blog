@@ -1,9 +1,31 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
-const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(255, 255, 255, 0.25)" }: { children: React.ReactNode, className?: string, spotlightColor?: string }) => {
+const SpotlightCard = ({ children, className = "", spotlightColor = "" }: { children: React.ReactNode, className?: string, spotlightColor?: string }) => {
   const divRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [opacity, setOpacity] = useState(0);
+  const [computedSpotlightColor, setComputedSpotlightColor] = useState(spotlightColor);
+
+  useEffect(() => {
+    if (spotlightColor) {
+        setComputedSpotlightColor(spotlightColor);
+        return;
+    }
+
+    // Function to update color from CSS variable
+    const updateColor = () => {
+        const color = getComputedStyle(document.documentElement).getPropertyValue('--spotlight-color').trim();
+        setComputedSpotlightColor(color || "rgba(255, 255, 255, 0.25)");
+    };
+
+    updateColor();
+
+    // Create an observer to watch for class changes on the html element (for theme toggling)
+    const observer = new MutationObserver(updateColor);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+    return () => observer.disconnect();
+  }, [spotlightColor]);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return;
@@ -26,22 +48,29 @@ const SpotlightCard = ({ children, className = "", spotlightColor = "rgba(255, 2
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      className={`relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 ${className}`}
+      className={`relative overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 ${className} group`}
       style={{
-          // Use default styles but allow overrides via className
-          backgroundColor: '#ffffff', // Set to white for higher contrast against light backgrounds
-          borderColor: '#e5e5e5',     // Light gray border
-          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' // Add shadow for depth
+          // Use CSS variables for theme support
+          backgroundColor: 'var(--background-card)',
+          borderColor: 'var(--border-color)',
+          boxShadow: '0 2px 5px rgba(0,0,0,0.05)',
+          transition: 'transform 0.2s, box-shadow 0.2s'
       }}
     >
       <div
         className="pointer-events-none absolute -inset-px opacity-0 transition duration-300"
         style={{
           opacity,
-          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${spotlightColor}, transparent 40%)`,
+          background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, ${computedSpotlightColor}, transparent 40%)`,
         }}
       />
       <div className="relative h-full">{children}</div>
+      <style>{`
+        .group:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+        }
+      `}</style>
     </div>
   );
 };
