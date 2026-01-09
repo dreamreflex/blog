@@ -3,12 +3,16 @@ name: Clean ESA Versions on Main
 on:
   push:
     branches: [ main ]
+  pull_request:
+    types: [ closed ]
+    branches: [ main ]
 
 permissions:
   contents: read
 
 jobs:
   clean-esa-versions:
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
