@@ -3,6 +3,7 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../consts';
+import { Icon } from 'astro-icon/components';
 ---
 
 <!doctype html>
@@ -16,38 +17,59 @@ import { SITE_TITLE } from '../consts';
 				margin: 0 auto;
 				padding: 3rem 1rem;
 			}
+            .page-header {
+                text-align: center;
+                margin-bottom: 3rem;
+            }
+            .page-header h1 {
+                font-size: 2.5em;
+                margin-bottom: 0.5em;
+            }
+            .page-header p {
+                font-size: 1.2em;
+                color: var(--text-secondary);
+                max-width: 600px;
+                margin: 0 auto;
+            }
 			.settings-panel {
-				background: #fff;
-				border: 1px solid #eee;
-				border-radius: 8px;
+				background: var(--background-card);
+				border: 1px solid var(--border-color);
+				border-radius: 12px;
 				padding: 2rem;
 				box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 			}
 			.cookie-option {
 				display: flex;
 				justify-content: space-between;
-				align-items: center;
-				padding: 1rem 0;
-				border-bottom: 1px solid #f0f0f0;
+				align-items: flex-start;
+				padding: 1.5rem 0;
+				border-bottom: 1px solid var(--border-color);
+                gap: 1rem;
 			}
 			.cookie-option:last-child {
 				border-bottom: none;
 			}
 			.option-info h3 {
 				margin: 0 0 0.5rem 0;
-				font-size: 1.1rem;
+				font-size: 1.2rem;
+                color: var(--text-heading);
+                display: flex;
+                align-items: center;
+                gap: 0.5em;
 			}
 			.option-info p {
 				margin: 0;
-				color: #666;
-				font-size: 0.9rem;
+				color: var(--text-secondary);
+				font-size: 0.95rem;
+                line-height: 1.5;
 			}
 			/* Toggle Switch */
 			.switch {
 				position: relative;
 				display: inline-block;
-				width: 50px;
-				height: 24px;
+				width: 52px;
+				height: 28px;
+                flex-shrink: 0;
 			}
 			.switch input { 
 				opacity: 0;
@@ -61,44 +83,56 @@ import { SITE_TITLE } from '../consts';
 				left: 0;
 				right: 0;
 				bottom: 0;
-				background-color: #ccc;
-				transition: .4s;
-				border-radius: 24px;
+				background-color: var(--gray);
+				transition: .3s;
+				border-radius: 34px;
 			}
 			.slider:before {
 				position: absolute;
 				content: "";
-				height: 16px;
-				width: 16px;
+				height: 20px;
+				width: 20px;
 				left: 4px;
 				bottom: 4px;
 				background-color: white;
-				transition: .4s;
+				transition: .3s;
 				border-radius: 50%;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 			}
 			input:checked + .slider {
 				background-color: var(--accent);
 			}
 			input:checked + .slider:before {
-				transform: translateX(26px);
+				transform: translateX(24px);
 			}
 			input:disabled + .slider {
 				opacity: 0.5;
 				cursor: not-allowed;
+                background-color: var(--gray-light);
 			}
+            input:disabled:checked + .slider {
+                background-color: var(--accent);
+                opacity: 0.6;
+            }
 			.actions {
 				margin-top: 2rem;
 				text-align: right;
+                padding-top: 1rem;
+                border-top: 1px solid var(--border-color);
 			}
 			.btn-save {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5em;
 				background-color: var(--accent);
 				color: white;
 				border: none;
-				padding: 0.8rem 1.5rem;
-				border-radius: 4px;
+				padding: 0.75rem 1.5rem;
+				border-radius: 99px;
 				cursor: pointer;
 				font-weight: bold;
 				font-size: 1rem;
+                transition: background-color 0.2s;
 			}
 			.btn-save:hover {
 				background-color: var(--accent-dark);
@@ -108,16 +142,21 @@ import { SITE_TITLE } from '../consts';
 	<body>
 		<Header />
 		<main>
-			<h1>Cookie 设置</h1>
-			<p>我们使用 Cookies 来改善您的浏览体验。您可以根据需要选择启用或禁用部分 Cookies。</p>
+            <div class="page-header">
+                <h1>Cookie 设置</h1>
+                <p>我们使用 Cookies 来改善您的浏览体验。您可以根据需要选择启用或禁用部分 Cookies。</p>
+            </div>
 
 			<div class="settings-panel">
 				<div class="cookie-option">
 					<div class="option-info">
-						<h3>必要 Cookies</h3>
+						<h3>
+                            <Icon name="lucide:shield-check" width="20" height="20" />
+                            必要 Cookies
+                        </h3>
 						<p>这些 Cookies 是网站运行所必需的（例如会话管理、安全登录），无法禁用。</p>
 					</div>
-					<label class="switch">
+					<label class="switch" title="必须启用">
 						<input type="checkbox" checked disabled>
 						<span class="slider"></span>
 					</label>
@@ -125,10 +164,13 @@ import { SITE_TITLE } from '../consts';
 
 				<div class="cookie-option">
 					<div class="option-info">
-						<h3>分析与统计</h3>
+						<h3>
+                            <Icon name="lucide:bar-chart-3" width="20" height="20" />
+                            分析与统计
+                        </h3>
 						<p>帮助我们了解用户如何使用网站，以便我们改进内容和性能（例如 Google Analytics）。</p>
 					</div>
-					<label class="switch">
+					<label class="switch" title="切换状态">
 						<input type="checkbox" checked>
 						<span class="slider"></span>
 					</label>
@@ -136,17 +178,23 @@ import { SITE_TITLE } from '../consts';
 
 				<div class="cookie-option">
 					<div class="option-info">
-						<h3>个性化设置</h3>
+						<h3>
+                            <Icon name="lucide:settings" width="20" height="20" />
+                            个性化设置
+                        </h3>
 						<p>用于记住您的偏好设置，如语言选择、主题模式等。</p>
 					</div>
-					<label class="switch">
+					<label class="switch" title="切换状态">
 						<input type="checkbox" checked>
 						<span class="slider"></span>
 					</label>
 				</div>
 
 				<div class="actions">
-					<button class="btn-save" onclick="alert('设置已保存（模拟）')">保存设置</button>
+					<button class="btn-save" onclick="alert('设置已保存（模拟）')">
+                        <Icon name="lucide:save" width="18" height="18" />
+                        保存设置
+                    </button>
 				</div>
 			</div>
 		</main>

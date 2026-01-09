@@ -3,6 +3,8 @@ import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../consts';
+import SpotlightCard from '../components/react/SpotlightCard';
+import { Icon } from 'astro-icon/components';
 ---
 
 <!doctype html>
@@ -16,65 +18,116 @@ import { SITE_TITLE } from '../consts';
 				margin: 0 auto;
 				padding: 3rem 1rem;
 			}
+            .page-header {
+                text-align: center;
+                margin-bottom: 3rem;
+            }
+            .page-header h1 {
+                font-size: 2.5em;
+                margin-bottom: 0.5em;
+            }
+            .page-header p {
+                font-size: 1.2em;
+                color: var(--text-secondary);
+                max-width: 600px;
+                margin: 0 auto;
+            }
 			.issue-container {
-				background: #fcfcfd;
+                /* Container logic only */
+			}
+            .cards-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
+			.option-content {
 				padding: 2rem;
-				border-radius: 8px;
-				border: 1px solid #eee;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
 			}
-			h1 {
-				margin-bottom: 1.5rem;
+            .icon-wrapper {
+                background: var(--gray-light);
+                padding: 1rem;
+                border-radius: 50%;
+                margin-bottom: 1.5rem;
+                color: var(--accent);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+			.option-content h3 {
+				margin: 0 0 1rem 0;
+				color: var(--text-heading);
+                font-size: 1.5em;
 			}
-			.option-card {
-				background: white;
-				padding: 1.5rem;
-				border-radius: 8px;
-				margin-bottom: 1.5rem;
-				box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-				transition: transform 0.2s;
-			}
-			.option-card:hover {
-				transform: translateY(-2px);
-				box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-			}
-			.option-card h3 {
-				margin-top: 0;
-				color: var(--accent);
-			}
+            .option-content p {
+                flex-grow: 1;
+                color: var(--text-secondary);
+                margin-bottom: 2rem;
+                line-height: 1.6;
+            }
 			.btn {
-				display: inline-block;
+				display: inline-flex;
+                align-items: center;
+                gap: 0.5em;
 				background-color: var(--accent);
 				color: white;
-				padding: 0.5rem 1rem;
+				padding: 0.75rem 1.5rem;
 				text-decoration: none;
-				border-radius: 4px;
-				margin-top: 1rem;
+				border-radius: 99px; /* Rounded pill shape */
 				font-weight: bold;
+                transition: all 0.2s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 			}
 			.btn:hover {
 				background-color: var(--accent-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+                color: white;
 			}
 		</style>
 	</head>
 	<body>
 		<Header />
 		<main>
-			<h1>报告问题与反馈</h1>
-			<p>如果您在使用过程中遇到任何问题，或有改进建议，请通过以下方式告诉我们。</p>
+            <div class="page-header">
+                <h1>报告问题与反馈</h1>
+                <p>如果您在使用过程中遇到任何问题，或有改进建议，请通过以下方式告诉我们。</p>
+            </div>
 			
 			<div class="issue-container">
-				<div class="option-card">
-					<h3>提交 Bug</h3>
-					<p>如果您发现了程序错误或显示异常，请在 GitHub 上提交 Issue。</p>
-					<a href="https://github.com/dreamreflex/blog/issues" target="_blank" class="btn">前往 GitHub Issues</a>
-				</div>
+                <div class="cards-grid">
+                    <SpotlightCard client:visible>
+                        <div class="option-content">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:github" width="32" height="32" />
+                            </div>
+                            <h3>提交 Bug</h3>
+                            <p>如果您发现了程序错误、显示异常，或者有功能建议，请在 GitHub 上提交 Issue。</p>
+                            <a href="https://github.com/dreamreflex/blog/issues" target="_blank" class="btn">
+                                <Icon name="lucide:external-link" width="18" height="18" />
+                                前往 GitHub Issues
+                            </a>
+                        </div>
+                    </SpotlightCard>
 
-				<div class="option-card">
-					<h3>邮件联系</h3>
-					<p>如果您有其他问题或不便使用 GitHub，可以直接发送邮件给我们。</p>
-					<a href="mailto:phil616@163.com" class="btn">发送邮件</a>
-				</div>
-
+                    <SpotlightCard client:visible>
+                        <div class="option-content">
+                            <div class="icon-wrapper">
+                                <Icon name="lucide:mail" width="32" height="32" />
+                            </div>
+                            <h3>邮件联系</h3>
+                            <p>如果您有其他问题、商务合作意向，或不便使用 GitHub，可以直接发送邮件给我们。</p>
+                            <a href="mailto:phil616@163.com" class="btn">
+                                <Icon name="lucide:send" width="18" height="18" />
+                                发送邮件
+                            </a>
+                        </div>
+                    </SpotlightCard>
+                </div>
 			</div>
 		</main>
 		<Footer />

@@ -39,7 +39,7 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 				align-items: center;
 				text-align: center;
 				padding: 4em 0;
-				background-color: #f9f9f9;
+				background-color: var(--background-hero);
 				border-radius: 8px;
 				margin-bottom: 2em;
 			}
@@ -55,7 +55,7 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 			}
 			.hero p {
 				font-size: 1.2em;
-				color: #555;
+				color: var(--text-secondary);
 				max-width: 600px;
 			}
 
@@ -75,11 +75,11 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 				justify-content: center;
 			}
 			.category-tag {
-				background-color: #e0e0e0;
+				background-color: var(--tag-bg);
 				padding: 0.5em 1em;
 				border-radius: 20px;
 				text-decoration: none;
-				color: #333;
+				color: var(--tag-text);
 				font-weight: bold;
 				transition: background-color 0.2s;
 				text-transform: capitalize;
@@ -98,8 +98,8 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 				padding: 0;
 			}
 			.post-card {
-				background: white;
-				border: 1px solid #eee;
+				background: var(--background-card);
+				border: 1px solid var(--border-color);
 				border-radius: 8px;
 				overflow: hidden;
 				transition: transform 0.2s;
@@ -125,17 +125,17 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 			.post-title {
 				margin: 0 0 0.5em 0;
 				font-size: 1.5rem;
-				color: var(--black);
+				color: var(--text-heading);
 			}
 			.post-date {
-				color: #888;
+				color: var(--text-muted);
 				font-size: 0.9em;
 				display: inline-block;
 			}
 			.post-meta {
 				margin-bottom: 0.5em;
 				font-size: 0.9em;
-				color: #888;
+				color: var(--text-muted);
 			}
 			.post-tags {
 				display: flex;
@@ -144,13 +144,13 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 			}
 			.mini-tag {
 				font-size: 0.75em;
-				background: #eee;
+				background: var(--tag-bg);
 				padding: 0.1rem 0.4rem;
 				border-radius: 4px;
-				color: #555;
+				color: var(--tag-text);
 			}
 			.post-desc {
-				color: #666;
+				color: var(--text-secondary);
 				line-height: 1.5;
 			}
 
