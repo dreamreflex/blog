@@ -85,6 +85,10 @@
     line-height: 1.2;
 }
 
+html.dark .post-title {
+    color: var(--text-heading);
+}
+
 .post-date {
     color: var(--text-muted);
     font-size: 0.9rem;
