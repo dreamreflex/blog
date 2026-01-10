@@ -1,4 +1,4 @@
-# Dream Reflex Blog Site
+# 云梦镜像博客
 
 云梦镜像博客站开放源代码仓库
 
@@ -8,17 +8,18 @@
 
 运维人员在[ESA Console](https://esa.console.aliyun.com/edge/pages/detail/blog/version)查看构建情况。
 
-特性：
+## 网站特性
 
-- 极简样式（打造你自己的风格！）
+- 极简样式
 - 100/100 Lighthouse 性能评分
 - SEO 友好，包含规范 URL 和 OpenGraph 数据
-- 支持站点地图
-- 支持 RSS 订阅
 - 支持 Markdown 和 MDX
 - 支持图片全屏预览和缩放
 - 支持全文模糊搜索
+- 支持明暗切换
+
 ## 编写
+
 ### 如何添加新文章
 
 1. 在 `src/content/blog/` 目录下创建一个新的 `.md` 或 `.mdx` 文件。
@@ -39,7 +40,7 @@ tags: ['tag1', 'tag2']
 
 ### 静态资源处理
 
-为了保持项目结构清晰，建议采用**资源共存（Colocation）**的方式管理博客图片：
+为了保持项目结构清晰，建议采用资源共存（Colocation）的方式管理博客图片：
 
 1. 对于名为 `my-post.md` 的文章，在同级目录下创建一个名为 `my-post.assets` 的文件夹。
 2. 将该文章引用的所有图片放入该文件夹中。
@@ -89,10 +90,10 @@ Astro 在 `src/pages/` 目录下查找 `.astro` 或 `.md` 文件。每个文件�
 | `npm run astro ...` | 运行 CLI 命令，如 `astro add`, `astro check` |
 | `npm run astro -- --help` | 获取 Astro CLI 使用帮助 |
 
-## 想要了解更多？
-
-查看 [我们的文档](https://docs.astro.build) 或加入我们的 [Discord 服务器](https://astro.build/chat)。
-
 ## 致谢
 
-本主题基于可爱的 [Bear Blog](https://github.com/HermanMartinus/bearblog/)。
+项目由[Astro](https://astro.build/)驱动
+
+开放源代码许可证： MIT - dreamreflex
+
+内容版权许可： [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
