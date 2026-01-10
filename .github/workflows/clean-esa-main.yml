@@ -3,9 +3,10 @@ name: Clean ESA Versions on Main
 on:
   push:
     branches: [ main ]
-  pull_request:
-    types: [ closed ]
-    branches: [ main ]
+  workflow_run:
+    workflows: ["Dev to Main CI/CD"]
+    types:
+      - completed
 
 permissions:
   contents: read
