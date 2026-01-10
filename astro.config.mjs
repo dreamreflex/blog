@@ -11,7 +11,7 @@ import { remarkFallbackImage } from './src/plugins/remark-fallback-image.mjs';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://example.com',
+	site: 'https://blog.dreamreflex.com',
 	markdown: {
 		remarkPlugins: [remarkFallbackImage, remarkMath],
 		rehypePlugins: [rehypeKatex],
