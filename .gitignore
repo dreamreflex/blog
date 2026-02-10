@@ -4,7 +4,7 @@ build/
 
 # Generated Types
 .astro/
-
+playgrounds/
 # Dependencies
 node_modules/
 .pnpm-store/
