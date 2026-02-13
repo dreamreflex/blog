@@ -14,15 +14,17 @@ import { Icon } from 'astro-icon/components';
 		<div class="header-controls">
 			<div class="social-theme-wrapper">
 				<div class="external-links">
+					<a href="https://doc.dreamreflex.com" target="_blank" rel="noopener noreferrer" class="website-link">
+						文档 <Icon name="lucide:arrow-up-right" width="16" height="16" />
+					</a>
+					<a href="https://dreamreflex.com" target="_blank" rel="noopener noreferrer" class="website-link">
+						官网 <Icon name="lucide:arrow-up-right" width="16" height="16" />
+					</a>
 					<a href="https://github.com/dreamreflex/blog" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
 						<Icon name="lucide:github" width="20" height="20" />
 					</a>
 				</div>
 				<ThemeToggle />
-			</div>
-			<div class="subscribe-box">
-				<input type="email" placeholder="输入邮箱..." />
-				<button type="button">订阅</button>
 			</div>
 		</div>
 	</div>
@@ -89,12 +91,6 @@ import { Icon } from 'astro-icon/components';
 		align-items: center;
 	}
 
-	.subscribe-box {
-		display: flex;
-		gap: 0.5em;
-		align-items: center;
-	}
-
 	.search-icon {
 		display: flex;
 		align-items: center;
@@ -105,27 +101,6 @@ import { Icon } from 'astro-icon/components';
 
 	.search-icon:hover {
 		color: var(--accent);
-	}
-
-	.subscribe-box input {
-		padding: 0.5em;
-		border: 1px solid var(--gray);
-		border-radius: 4px;
-		background: var(--background-body);
-		color: var(--text-main);
-	}
-
-	.subscribe-box button {
-		padding: 0.5em 1em;
-		background-color: var(--accent);
-		color: white;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-	}
-
-	.subscribe-box button:hover {
-		background-color: var(--accent-dark);
 	}
 
 	nav {
@@ -172,6 +147,13 @@ import { Icon } from 'astro-icon/components';
 		transition: color 0.2s;
 		display: flex;
 		align-items: center;
+		text-decoration: none;
+	}
+
+	.website-link {
+		font-size: 0.9em;
+		font-weight: 500;
+		gap: 0.2em;
 	}
 
 	.external-links a:hover {
@@ -188,13 +170,6 @@ import { Icon } from 'astro-icon/components';
 			width: 100%;
 			flex-direction: column;
 			gap: 1em;
-		}
-		.subscribe-box {
-			width: 100%;
-			justify-content: center;
-		}
-		.subscribe-box input {
-			max-width: 200px;
 		}
 		nav {
 			display: flex;
