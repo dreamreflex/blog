@@ -1,8 +1,8 @@
 ---
 order: 1
 title: '01-LLM能力和原理'
-description: '格是由一组线性无关向量通过整数线性组合生成的点集。'
-pubDate: '2026-01-01'
+description: 'LLM能力和原理说明，属于云梦镜像课程的一部分'
+pubDate: '2026-02-13'
 tags: ['AI']
 ---
 
