@@ -2,7 +2,7 @@
 title: 'RAG原子能力设计方案'
 description: 'RAG应用的原子能力和基础能力设计'
 pubDate: '2026-01-13'
-tags: ['技术方案', 'PQC']
+tags: ['技术方案', '人工智能']
 ---
 
 # RAG原子能力设计方案
