@@ -12,6 +12,8 @@ const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
 );
 
+console.log('Sorted posts:', posts.map(p => ({ title: p.data.title, date: p.data.pubDate })).slice(0, 5));
+
 // Get unique tags
 const tags = [...new Set(posts.flatMap(post => post.data.tags || []))];
 const latestPosts = posts.slice(0, 3); // Top 3 posts
