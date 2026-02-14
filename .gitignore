@@ -2,6 +2,9 @@
 dist/
 build/
 
+# Build info (generated at build time)
+src/build-info.json
+
 # Generated Types
 .astro/
 playgrounds/
