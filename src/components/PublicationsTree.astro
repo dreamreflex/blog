@@ -32,7 +32,7 @@ const sortedNodes = [...nodes].sort((a: any, b: any) => {
     if (item.type === 'file') {
       return (
         <li class="file">
-          <a href={`/learning/${item.data.id}/`}>
+          <a href={`/publications/${item.data.id}/`}>
             <span class="icon"><Icon name="lucide:file-text" /></span>
             <span class="title">{item.data.data.title}</span>
           </a>
