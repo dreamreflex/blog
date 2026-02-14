@@ -95,10 +95,10 @@ jobs:
           
           MESSAGE="**GitHub Actions Notification**
           
-          **Repository:** ${REPO_NAME}
-          **Status:** ${STATUS}
-          **Workflow:** [View Run](${WORKFLOW_URL})
-          **Commit:** [${COMMIT_SHA::7}](${COMMIT_URL})
+          Repository: ${REPO_NAME}
+          Status: ${STATUS}
+          Workflow: [View Run](${WORKFLOW_URL})
+          Commit: [${COMMIT_SHA::7}](${COMMIT_URL})
           
           _Powered by DreamReflex Bot_"
           
