@@ -5,9 +5,18 @@ const { nodes } = Astro.props;
 
 const sortedNodes = [...nodes].sort((a: any, b: any) => {
   const getOrder = (node: any) => {
+    // 1. 对于文件：直接使用 frontmatter 中的 order
     if (node.type === 'file' && node.data.data.order !== undefined) {
       return node.data.data.order;
     }
+    // 2. 对于文件夹：从名称解析数字前缀（如 "01-文件夹名"）
+    if (node.type === 'directory') {
+      const prefixMatch = node.name.match(/^(\d+)[-_]/);
+      if (prefixMatch) {
+        return parseInt(prefixMatch[1], 10);
+      }
+    }
+    // 3. 默认返回 Infinity（排在最后）
     return Infinity;
   };
 
@@ -19,8 +28,11 @@ const sortedNodes = [...nodes].sort((a: any, b: any) => {
   }
 
   const getName = (node: any) => {
-    if (node.type === 'file') return node.data.data.title;
-    return node.name;
+    if (node.type === 'file') {
+      return node.data.data.title;
+    }
+    // 对于文件夹：去掉数字前缀
+    return node.name.replace(/^\d+[-_]/, '');
   };
 
   return getName(a).localeCompare(getName(b), 'zh-CN');
@@ -44,7 +56,7 @@ const sortedNodes = [...nodes].sort((a: any, b: any) => {
           <details open>
             <summary>
               <span class="icon"><Icon name="lucide:folder" /></span>
-              <span class="title">{item.name}</span>
+              <span class="title">{item.name.replace(/^\d+[-_]/, '')}</span>
             </summary>
             <ul>
               <Astro.self nodes={Object.values(item.children)} />
