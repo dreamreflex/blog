@@ -4,36 +4,74 @@ import BaseHead from '../../components/BaseHead.astro';
 import Header from '../../components/Header.astro';
 import Footer from '../../components/Footer.astro';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../../consts';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import LearningTree from '../../components/LearningTree.astro';
 
 const posts = await getCollection('learning');
 
-// Build directory tree
+// First, build a map from lowercase path to correct case path using file system
+const learningDir = path.join(process.cwd(), 'src/content/learning');
+const pathCaseMap = new Map<string, string>();
+
+function buildPathMap(dir: string, basePath: string = '') {
+	const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+	for (const entry of entries) {
+		const fullPath = path.join(dir, entry.name);
+		const currentPath = basePath ? `${basePath}/${entry.name}` : entry.name;
+		const lowercasePath = currentPath.toLowerCase();
+
+		pathCaseMap.set(lowercasePath, currentPath);
+
+		if (entry.isDirectory() && !entry.name.endsWith('.assets')) {
+			buildPathMap(fullPath, currentPath);
+		}
+	}
+}
+
+buildPathMap(learningDir);
+
+// Helper to get correct case for a path part
+function getCorrectCasePart(parts: string[], index: number): string {
+	const pathSoFar = parts.slice(0, index + 1).join('/');
+	const correctPath = pathCaseMap.get(pathSoFar.toLowerCase());
+	if (correctPath) {
+		const correctParts = correctPath.split('/');
+		return correctParts[correctParts.length - 1];
+	}
+	return parts[index];
+}
+
+// Build directory tree with correct case
 const tree: Record<string, any> = {};
 
 posts.forEach((post) => {
 	const parts = post.id.split('/');
 	let current = tree;
-	
+
 	parts.forEach((part, index) => {
+		// Get the correct case for this part
+		const correctPart = getCorrectCasePart(parts, index);
+
 		if (index === parts.length - 1) {
 			// File
-			current[part] = {
+			current[correctPart] = {
 				type: 'file',
 				data: post,
-				name: part
+				name: correctPart
 			};
 		} else {
 			// Directory
-			if (!current[part]) {
-				current[part] = {
+			if (!current[correctPart]) {
+				current[correctPart] = {
 					type: 'directory',
 					children: {},
-					name: part
+					name: correctPart
 				};
 			}
-			current = current[part].children;
+			current = current[correctPart].children;
 		}
 	});
 });
