@@ -193,6 +193,118 @@ http {
 
 ![image-20260213162109671](./阿里云ICP阻断绕过.assets/image-20260213162109671.png)
 
+## 生产可用的配置文件
+
+nginx配置
+
+```
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    sendfile        on;
+    keepalive_timeout  65;
+
+    # ----------- 映射 PQC 组名称 ------------
+    map $ssl_curve $pqc_group {
+        "0x11ec"   "X25519MLKEM768";
+        "0x11ed"   "X25519Kyber768Draft00";
+        default    $ssl_curve;
+    }
+
+    map $pqc_group $pqc_status {
+        "~MLKEM"            "hybrid_pqc";
+        "~Kyber768Draft00"  "hybrid_pqc_draft";
+        default             "no_pqc";
+    }
+
+    map $ssl_protocol $tls13 {
+        "TLSv1.3"   "1";
+        default     "0";
+    }
+
+    log_format pqc_log '$remote_addr "$request" '
+                       'protocol=$ssl_protocol cipher=$ssl_cipher '
+                       'group_raw=$ssl_curve group_name=$pqc_group '
+                       'pqc_status=$pqc_status';
+
+    access_log  logs/access_pqc.log pqc_log;
+
+    # =======================
+    # HSTS
+    # =======================
+    server {
+        listen      80;
+        server_name pqc.dreamreflex.com;
+        return 301 https://$host$request_uri;
+    }
+
+    # =======================
+    # 443 HTTPS 站点
+    # =======================
+    server {
+        listen 443 ssl http2;
+        server_name pqc.dreamreflex.com;
+
+        ssl_certificate     /opt/1panel/www/pqc.dreamreflex.com.ssl/fullchain.pem;
+        ssl_certificate_key /opt/1panel/www/pqc.dreamreflex.com.ssl/privkey.pem;
+
+        # 只启用 TLS1.3（PQC 有效）
+        ssl_protocols TLSv1.3;
+
+        # === 启用后量子混合密钥交换组 ===
+        # 这里优先 X25519MLKEM768 再考虑传统组
+        ssl_ecdh_curve X25519MLKEM768:X25519:prime256v1;
+
+        # 或者使用 ssl_conf_command 明确传递 OpenSSL 曲线策略
+        ssl_conf_command Curves X25519MLKEM768:X25519:prime256v1;
+
+        # 必要时可指定 TLS1.3 密码套件
+        ssl_conf_command Ciphersuites TLS_AES_256_GCM_SHA384:TLS_AES_128_GCM_SHA256;
+
+        # 优先客户端选择（兼容性能更好）
+        ssl_prefer_server_ciphers off;
+
+        # === 附加头 此处的附加头可以根据后端中间件自行确定 ===
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+        add_header X-TLS-Protocol   $ssl_protocol  always;
+        add_header X-TLS-Cipher     $ssl_cipher    always;
+        add_header X-TLS-Curve      $pqc_group     always;
+        add_header X-PQC-Status     $pqc_status    always;
+        add_header X-TLS-TLS13      $tls13         always;
+
+        root   html;
+
+        location / {
+            index  index.html;
+        }
+
+        location /api/ {
+            proxy_pass http://127.0.0.1:8000/;
+            proxy_set_header Host              $host;
+            proxy_set_header X-Real-IP         $remote_addr;
+            proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+
+            proxy_set_header X-TLS-Protocol   $ssl_protocol;
+            proxy_set_header X-TLS-Cipher     $ssl_cipher;
+            proxy_set_header X-TLS-Curve-Raw  $ssl_curve;
+            proxy_set_header X-TLS-Curve      $pqc_group;
+            proxy_set_header X-PQC-Status     $pqc_status;
+
+            proxy_set_header X-TLS-Cipher-List   $ssl_ciphers;
+            proxy_set_header X-TLS-Curves-Client $ssl_curves;
+            proxy_set_header X-TLS-ALPN          $ssl_alpn_protocol;
+            proxy_set_header X-TLS-Early-Data    $ssl_early_data;
+        }
+    }
+}
+```
+
+效果
+
+![image-20260214140115841](./阿里云ICP阻断绕过.assets/image-20260214140115841.png)
+
 ## 结论
 
 阿里云的ICP拦截确实存在问题，但问题未必在包大小，因为激活HSTS的HTTPS请求也会被绕过，可能是条件绕过
