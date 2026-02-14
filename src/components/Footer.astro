@@ -1,6 +1,18 @@
 ---
 const today = new Date();
 import { SITE_TITLE } from '../consts';
+
+let buildInfo = { date: '', sha: '' };
+try {
+  const buildInfoModule = await import('../build-info.json', { with: { type: 'json' } });
+  buildInfo = buildInfoModule.default;
+} catch {
+  // Fallback if file doesn't exist
+  const buildDate = today.getFullYear().toString() +
+    (today.getMonth() + 1).toString().padStart(2, '0') +
+    today.getDate().toString().padStart(2, '0');
+  buildInfo = { date: buildDate, sha: 'dev' };
+}
 ---
 
 <footer>
@@ -68,6 +80,11 @@ import { SITE_TITLE } from '../consts';
 				<a href="/issue">报告问题</a>
 				<a href="/cookies">Cookie 设置</a>
 			</div>
+			{buildInfo.date && (
+				<div class="build-info">
+					build at {buildInfo.date} with sha:{buildInfo.sha}
+				</div>
+			)}
 		</div>
 	</div>
 </footer>
@@ -173,6 +190,13 @@ import { SITE_TITLE } from '../consts';
 	}
 	.bottom-links a:hover {
 		text-decoration: underline;
+	}
+	.build-info {
+		font-size: 0.75em;
+		color: var(--text-muted);
+		opacity: 0.7;
+		margin-top: 0.5rem;
+		font-family: monospace;
 	}
 
 	@media (max-width: 768px) {
