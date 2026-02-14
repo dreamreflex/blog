@@ -91,7 +91,7 @@ body {
 	word-wrap: break-word;
 	overflow-wrap: break-word;
 	color: var(--text-main);
-	font-size: 20px;
+	font-size: 16px;
 	line-height: 1.7;
 	/* Removed overflow-x: hidden from body to allow sticky positioning to work properly */
 	width: 100%;
@@ -118,19 +118,19 @@ h6 {
 	line-height: 1.2;
 }
 h1 {
-	font-size: 3.052em;
+	font-size: 2.5rem;
 }
 h2 {
-	font-size: 2.441em;
+	font-size: 2rem;
 }
 h3 {
-	font-size: 1.953em;
+	font-size: 1.5rem;
 }
 h4 {
-	font-size: 1.563em;
+	font-size: 1.25rem;
 }
 h5 {
-	font-size: 1.25em;
+	font-size: 1.125rem;
 }
 strong,
 b {
@@ -159,7 +159,7 @@ table {
 	width: 100%;
 	border-collapse: collapse;
 	margin: 2rem 0;
-	font-size: 0.95em;
+	font-size: 0.9rem;
 }
 th, td {
 	padding: 12px 15px;
@@ -194,6 +194,7 @@ pre {
 	background-color: rgb(var(--gray-light));
 	color: var(--text-main);
 	overflow-x: auto;
+	font-size: 0.9rem;
 }
 pre > code {
 	all: unset;
@@ -202,7 +203,7 @@ blockquote {
 	border-left: 4px solid var(--accent);
 	padding: 0 0 0 20px;
 	margin: 0;
-	font-size: 1.333em;
+	font-size: 1.125rem;
 }
 hr {
 	border: none;
@@ -210,10 +211,19 @@ hr {
 }
 @media (max-width: 720px) {
 	body {
-		font-size: 18px;
+		font-size: 15px;
 	}
 	main {
 		padding: 1em;
+	}
+	h1 {
+		font-size: 2rem;
+	}
+	h2 {
+		font-size: 1.75rem;
+	}
+	h3 {
+		font-size: 1.35rem;
 	}
 }
 
