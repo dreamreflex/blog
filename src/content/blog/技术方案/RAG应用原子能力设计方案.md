@@ -69,10 +69,20 @@ Chat Completions 风格
 
 对于入参二元组INPUT = questionString + userspace(route)由系统管理
 
+```
+INPUT(QueryString, UserSpace)
+example: ("Question is", UserID)
+```
+
 而响应二元组RESP = list(rankNumber+result)由知识库本身管理，但需要抽象细节，且这部分没有切片过程，只有读取过程。
+
+```
+OUTPUT = [<Document Response>]
+```
 
 ### 模型管理
 
 模型管理部分只有Meta管理是需要系统完成的，通用IO和限额限流都可以由API完成。
 
 IO的函数式封装和第三方API封装可以由固定逻辑
+
