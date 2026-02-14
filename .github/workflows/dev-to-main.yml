@@ -82,3 +82,28 @@ jobs:
         if: failure()
         run: |
           echo "CI/CD 流程失败，请检查构建或合并问题"
+
+      - name: Send Telegram Notification
+        if: always() # 无论前面的步骤成功与否都运行
+        run: |
+          # 构造消息内容
+          REPO_NAME="${{ github.repository }}"
+          COMMIT_SHA="${{ github.sha }}"
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+          WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          STATUS="${{ job.status }}"
+          
+          MESSAGE="**GitHub Actions Notification**
+          
+          **Repository:** ${REPO_NAME}
+          **Status:** ${STATUS}
+          **Workflow:** [View Run](${WORKFLOW_URL})
+          **Commit:** [${COMMIT_SHA::7}](${COMMIT_URL})
+          
+          _Powered by DreamReflex Bot_"
+          
+          # 发送请求
+          curl -X POST https://phil616-tgbot.dreamreflex.com/push \
+            -H "x-webhook-secret: ${{ secrets.TG_WEBHOOK_SECRET }}" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg msg "$MESSAGE" '{message: $msg}')"
