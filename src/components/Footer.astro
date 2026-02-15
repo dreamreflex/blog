@@ -80,14 +80,16 @@ try {
 				<a href="/issue">报告问题</a>
 				<a href="/cookies">Cookie 设置</a>
 			</div>
-			{buildInfo.date && (
-				<div class="build-info">
-					build at {buildInfo.date} with sha:{buildInfo.sha}
-				</div>
-			)}
 		</div>
 	</div>
 </footer>
+
+<script define:vars={{ buildInfo }}>
+	if (buildInfo && buildInfo.date) {
+		console.info(`DreamReflex Blog build info: artifact build at ${buildInfo.date} with commit-sha:${buildInfo.sha}`);
+		console.info(`招聘投递：hr@dreamreflex.com`)
+	}
+</script>
 
 <style>
 	footer {
@@ -190,13 +192,6 @@ try {
 	}
 	.bottom-links a:hover {
 		text-decoration: underline;
-	}
-	.build-info {
-		font-size: 0.75em;
-		color: var(--text-muted);
-		opacity: 0.7;
-		margin-top: 0.5rem;
-		font-family: monospace;
 	}
 
 	@media (max-width: 768px) {
