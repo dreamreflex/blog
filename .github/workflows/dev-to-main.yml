@@ -93,7 +93,7 @@ jobs:
           WORKFLOW_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           STATUS="${{ job.status }}"
           
-          MESSAGE="**GitHub Actions Notification**
+          MESSAGE="GitHub Actions Notification
           
           Repository: ${REPO_NAME}
           Status: ${STATUS}
