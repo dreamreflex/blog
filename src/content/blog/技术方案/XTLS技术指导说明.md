@@ -157,18 +157,6 @@ openssl rand -hex 4
   "log": {
     "loglevel": "warning"
   },
-  "dns": {
-    "servers": [
-      {
-        "address": "https://1.1.1.1/dns-query",
-        "domains": ["geosite:geolocation-!cn"]
-      },
-      {
-        "address": "https://8.8.8.8/dns-query"
-      },
-      "localhost"
-    ]
-  },
   "inbounds": [
     {
       "listen": "0.0.0.0",
@@ -177,7 +165,7 @@ openssl rand -hex 4
       "settings": {
         "clients": [
           {
-            "id": "你的UUID",
+            "id": "<UUID>",
             "flow": "xtls-rprx-vision"
           }
         ],
@@ -193,9 +181,9 @@ openssl rand -hex 4
           "serverNames": [
             "www.microsoft.com"
           ],
-          "privateKey": "你的私钥",
+          "privateKey": "<生成的私钥>",
           "shortIds": [
-            "a1b2c3d4"
+            "<生成的ID>"
           ]
         }
       },
