@@ -757,56 +757,135 @@ tail -f /var/log/nginx/error.log
 
 ---
 
-## 10. 新节点快速部署检查清单
+## 10. Nginx前置方案
 
-每次在新服务器部署时，按此清单逐项确认。
+Nginx配置:
 
-### 服务器侧
+```
+server {
+    listen 80;
+    listen [::]:80;
+    server_name proxy.example.com;
 
-- [ ] 确认服务器 IP 归属海外（`curl -s https://ipinfo.io/json`）
-- [ ] 确认服务器能访问 Google（`curl -I https://www.google.com`）
-- [ ] 防火墙已放行 80 / 443 端口
-- [ ] 安装 Xray（`xray version` 验证）
-- [ ] 生成新的密钥对（`xray x25519`）
-- [ ] 生成新的 UUID（`xray uuid`）
-- [ ] 生成新的 shortId（`openssl rand -hex 4`）
-- [ ] 填写 config.json（私钥、UUID、shortId）
-- [ ] 启动 Xray（`systemctl status xray` 确认 running）
-- [ ] 日志级别设为 `warning`
-- [ ] （可选）安装 Nginx，配置 stream 分流
-- [ ] （可选）申请 SSL 证书
-- [ ] （可选）部署真实网站内容
+    location ^~ /.well-known/acme-challenge/ {
+        allow all;
+        root /usr/share/nginx/html;
+    }
 
-### 客户端侧
+    return 301 https://$host$request_uri;
+}
 
-- [ ] Clash Verge 使用 Mihomo (Meta) 内核
-- [ ] 节点 yaml 填入正确的服务器 IP / 域名
-- [ ] uuid 与服务器一致
-- [ ] public-key 填入服务器生成的公钥（非私钥）
-- [ ] short-id 与服务器一致
-- [ ] servername 与服务器 serverNames 一致
-- [ ] client-fingerprint 设为 `chrome` 或 `firefox`
-- [ ] DNS 配置 fake-ip 模式，fallback 指向 DoH
-- [ ] ipv6 设为 false
-- [ ] System Proxy 已开启
-- [ ] 用 Global 模式验证节点可用，再切回 Rule 模式
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name proxy.example.com;
 
-### 验证流程
+    ssl_certificate /www/sites/proxy.example.com/ssl/fullchain.pem;
+    ssl_certificate_key /www/sites/proxy.example.com/ssl/privkey.pem;
 
-```bash
-# 1. 服务器端开启日志观察
-journalctl -u xray -f
+    ssl_protocols TLSv1.3 TLSv1.2;
+    ssl_ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+    ssl_prefer_server_ciphers off;
+    ssl_session_cache shared:SSL:10m;
+    ssl_session_timeout 10m;
 
-# 2. 客户端强制走代理测试
-curl -x http://127.0.0.1:7897 https://www.google.com -v --max-time 10
-# 期望：HTTP/2 200
+    access_log /www/sites/proxy.example.com/log/access.log main;
+    error_log /www/sites/proxy.example.com/log/error.log;
 
-# 3. 确认日志中出现 google.com 的连接记录
-# 期望日志格式：
-# accepted tcp:www.google.com:443 [direct]
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    location ~ ^/(\.user.ini|\.htaccess|\.git|\.env|\.svn|\.project|LICENSE|README.md) {
+        return 404;
+    }
+
+    location = /xray-ws {
+        proxy_pass http://127.0.0.1:10000;
+
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+
+        # Xray WebSocket 会识别 X-Forwarded-For；为了避免客户端伪造，建议只传 remote_addr
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto https;
+
+        proxy_redirect off;
+        proxy_buffering off;
+
+        proxy_read_timeout 300s;
+        proxy_send_timeout 300s;
+    }
+
+    location / {
+      root /www/sites/proxy.example.com/index;
+      index index.html;
+      try_files $uri $uri/ =404;
+    }
+
+    error_page 404 /404.html;
+    error_page 497 https://$host$request_uri;
+}
 ```
 
----
+Nginx HTTP block need:
+```
+    map $http_upgrade $connection_upgrade {
+        default upgrade;
+        "" close;
+    }
+```
+
+Config for Xray
+```
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "tag": "vless-ws-in",
+      "listen": "127.0.0.1",
+      "port": 10000,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "自定义的UUID",
+            "level": 0
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/xray-ws"
+        }
+      },
+      "sniffing": {
+        "enabled": true,
+        "destOverride": [
+          "http",
+          "tls"
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "direct",
+      "protocol": "freedom"
+    },
+    {
+      "tag": "blocked",
+      "protocol": "blackhole"
+    }
+  ]
+}
+```
 
 ## 附录
 
