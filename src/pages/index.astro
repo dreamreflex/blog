@@ -2,7 +2,7 @@
 import BaseHead from '../components/BaseHead.astro';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
-import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
+import { SITE_DESCRIPTION, SITE_LOGO, SITE_TITLE } from '../consts';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 import { resolveImage } from '../utils/resolveImage';
@@ -171,12 +171,12 @@ const latestPostsWithImages = await Promise.all(latestPosts.map(async (post) => 
 		<main>
 			<!-- 1. Intro + Logo -->
 			<section class="hero">
-				<img src="/favicon.png" alt="Logo" class="hero-logo" />
+				<img src={SITE_LOGO} alt="AltasCI Logo" class="hero-logo" />
 				<h1>{SITE_TITLE}</h1>
 				<p>
-					欢迎来到云梦镜像博客，你可以在这里找到实践方案，解决方案和技术说明等内容。
+					欢迎来到 AltasCI 博客，你可以在这里找到实践方案、解决方案和技术说明等内容。
 					<br>
-					如果您需要参考产品文档和技术参数，请移步<a href="https://doc.dreamreflex.com">云梦镜像文档</a>
+					如果您需要参考产品文档和技术参数，请移步<a href="https://doc.dreamreflex.com">AltasCI 文档</a>
 				</p>
 			</section>
 

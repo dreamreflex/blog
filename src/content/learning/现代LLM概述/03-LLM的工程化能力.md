@@ -117,7 +117,7 @@ print(f"Model>\t {message.content}")
 它的输出是
 
 ```
-PS D:\DreamReflexTech\devops-blog\playgrounds> python .\main.py
+PS D:\AltasCITech\devops-blog\playgrounds> python .\main.py
 User>    How's the weather in Hangzhou, Zhejiang?
 Tools>   get_weather
 Tools>   call_00_TFDN6pHzQnfWLRz7slT87VIE
@@ -125,7 +125,7 @@ Tools>   Function(arguments='{"location": "Hangzhou, Zhejiang"}', name='get_weat
 Tools>   {"location": "Hangzhou, Zhejiang"}
 Tools>   温度是 33℃
 Model>   The current weather in Hangzhou, Zhejiang is 33°C (approximately 91°F). It's quite warm there!
-PS D:\DreamReflexTech\devops-blog\playgrounds> 
+PS D:\AltasCITech\devops-blog\playgrounds>
 ```
 
 能够看得出来，此时脚本作为一个客户端，在模型返回的内容中解析到了希望调用获取天气的工具，并且通过一些手段得到了温度信息，返回给了模型，模型就具有了与现实世界交互的能力。

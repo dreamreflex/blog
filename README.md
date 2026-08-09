@@ -1,10 +1,10 @@
-# 云梦镜像博客
+# AltasCI 博客
 
-云梦镜像博客站开放源代码仓库
+AltasCI 博客站开放源代码仓库
 
 ## 网站
 
-该网站部署在[dreamreflex-blog](https://blog.dreamreflex.com)
+该网站部署在 [AltasCI Blog](https://blog.altasci.com)
 
 运维人员在[ESA Console](https://esa.console.aliyun.com/edge/pages/detail/blog/version)查看构建情况。
 
@@ -15,7 +15,7 @@
 - SEO 友好，包含规范 URL 和 OpenGraph 数据
 - 支持 Markdown 和 MDX
 - 支持图片全屏预览和缩放
-- 支持全文模糊搜索
+- 支持按标题、描述和标签搜索
 - 支持明暗切换
 
 ## 编写
@@ -94,6 +94,6 @@ Astro 在 `src/pages/` 目录下查找 `.astro` 或 `.md` 文件。每个文件�
 
 项目由[Astro](https://astro.build/)驱动
 
-开放源代码许可证： MIT - dreamreflex
+开放源代码许可证：MIT - AltasCI
 
 内容版权许可： [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)

@@ -106,6 +106,28 @@ html.dark .post-title {
     overflow: hidden;
 }
 
+.post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: auto;
+    padding-top: 1rem;
+}
+
+.post-tag {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    background: var(--tag-bg);
+    color: var(--tag-text);
+    font-size: 0.8rem;
+}
+
+.result-count {
+    margin: 0;
+    color: var(--text-muted);
+    text-align: center;
+}
+
 /* Utilities */
 .hidden {
     display: none !important;
@@ -119,11 +141,4 @@ html.dark .post-title {
     padding: 2rem;
     background: var(--background-hero);
     border-radius: 8px;
-}
-
-.loading-msg {
-    text-align: center;
-    color: var(--text-secondary);
-    margin-top: 2rem;
-    font-style: italic;
 }

@@ -39,7 +39,7 @@ print(response.choices[0].message.content)
 这段代码放回的是
 
 ```
-PS D:\DreamReflexTech\devops-blog\playgrounds> python .\main.py
+PS D:\AltasCITech\devops-blog\playgrounds> python .\main.py
 Hello! How can I assist you today?
 ```
 

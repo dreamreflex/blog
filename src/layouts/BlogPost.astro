@@ -187,6 +187,76 @@ const resolvedHeroImage = await resolveImage(heroImage);
 		<Footer />
 		<ImagePreview />
 
+		<script is:inline>
+			async function writeToClipboard(text) {
+				if (navigator.clipboard && window.isSecureContext) {
+					try {
+						await navigator.clipboard.writeText(text);
+						return;
+					} catch {
+						// Fall back for browsers that deny the Clipboard API permission.
+					}
+				}
+
+				const textarea = document.createElement('textarea');
+				textarea.value = text;
+				textarea.readOnly = true;
+				textarea.style.position = 'fixed';
+				textarea.style.opacity = '0';
+				document.body.appendChild(textarea);
+				textarea.select();
+				const copied = document.execCommand('copy');
+				textarea.remove();
+				if (!copied) throw new Error('Copy command failed');
+			}
+
+			function setupCodeCopyButtons() {
+				document.querySelectorAll('.prose pre').forEach((pre) => {
+					if (
+						pre.closest('.code-block-wrapper') ||
+						pre.matches('[data-language="mermaid"]') ||
+						pre.querySelector('code.language-mermaid')
+					) return;
+
+					const code = pre.querySelector('code');
+					const parent = pre.parentNode;
+					if (!code || !parent) return;
+
+					const wrapper = document.createElement('div');
+					wrapper.className = 'code-block-wrapper';
+					parent.insertBefore(wrapper, pre);
+					wrapper.appendChild(pre);
+
+					const button = document.createElement('button');
+					button.type = 'button';
+					button.className = 'code-copy-button';
+					button.textContent = '复制';
+					button.setAttribute('aria-label', '复制代码');
+					wrapper.appendChild(button);
+
+					let resetTimer;
+					button.addEventListener('click', async () => {
+						window.clearTimeout(resetTimer);
+						try {
+							await writeToClipboard(code.textContent || '');
+							button.textContent = '已复制';
+							button.classList.add('is-copied');
+						} catch {
+							button.textContent = '复制失败';
+							button.classList.remove('is-copied');
+						}
+						resetTimer = window.setTimeout(() => {
+							button.textContent = '复制';
+							button.classList.remove('is-copied');
+						}, 2000);
+					});
+				});
+			}
+
+			setupCodeCopyButtons();
+			document.addEventListener('astro:page-load', setupCodeCopyButtons);
+		</script>
+
 		<script type="module" is:inline>
 			import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 			

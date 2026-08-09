@@ -41,9 +41,9 @@ tags: ['最佳实践', '网络安全']
 
 ## 支持PQC的组件编译流程
 
-[支持PQC的组件编译流程](https://blog.dreamreflex.com/blog/%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/%E6%94%AF%E6%8C%81pqc%E7%9A%84nginx%E7%BC%96%E8%AF%91%E6%B5%81%E7%A8%8B/)
+[支持PQC的组件编译流程](https://blog.altasci.com/blog/%E6%8A%80%E6%9C%AF%E6%96%B9%E6%A1%88/%E6%94%AF%E6%8C%81pqc%E7%9A%84nginx%E7%BC%96%E8%AF%91%E6%B5%81%E7%A8%8B/)
 
-同时为了验证PQC的能力，这里利用了DreamReflex NGP的源码：
+同时为了验证PQC的能力，这里利用了 AltasCI NGP 的源码：
 
 https://github.com/dreamreflex/ngp/tree/main/hybrid-pqc-site
 

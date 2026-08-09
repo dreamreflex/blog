@@ -7,7 +7,7 @@ tags: ['最佳实践', '运维', 's12e']
 
 # ESA部署Pages时的限额问题
 
-云梦镜像博客（该站点）部署在阿里云的[边缘安全加速 ESA](https://www.aliyun.com/product/esa)，本文主要解决的是ESA的Pages限额问题。
+AltasCI 博客（该站点）部署在阿里云的[边缘安全加速 ESA](https://www.aliyun.com/product/esa)，本文主要解决的是ESA的Pages限额问题。
 
 ## 问题介绍
 
@@ -553,4 +553,3 @@ echo "pages_name=your_pages_name" >> $GITHUB_OUTPUT
 - 清理workflow是否执行成功
 - ESA是否正确连接到GitHub仓库的main分支
 - GitHub和ESA之间的网络连接是否正常
-

@@ -100,7 +100,7 @@ jobs:
           Workflow: [View Run](${WORKFLOW_URL})
           Commit: [${COMMIT_SHA::7}](${COMMIT_URL})
           
-          _Powered by DreamReflex Bot_"
+          _Powered by AltasCI Bot_"
           
           # 发送请求
           curl -X POST https://phil616-tgbot.dreamreflex.com/push \

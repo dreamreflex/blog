@@ -16,7 +16,7 @@ FRP 完全可以在 HTTPS / WebSocket 隧道之上承载纯 TCP 流量
 ## 技术背景
 
 1. FRP对STCP和WebSocket的支持良好，在[原始代码](https://github.com/fatedier/frp/blob/master/pkg/util/net/websocket.go)中定义了`FrpWebsocketPath = "/~!frp"` 作为匹配字符串
-2. 大部分HTTPS网关在支持协议升级后无法查看内部流量，因此只要绕过SNI嗅探，即可搭建完全加密的内容。至于SNI嗅探，阿里云对于SNI存在绕过问题，详见[阿里云ICP阻断绕过](https://blog.dreamreflex.com/blog/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E5%88%86%E4%BA%AB/%E9%98%BF%E9%87%8C%E4%BA%91icp%E9%98%BB%E6%96%AD%E7%BB%95%E8%BF%87/)
+2. 大部分HTTPS网关在支持协议升级后无法查看内部流量，因此只要绕过SNI嗅探，即可搭建完全加密的内容。至于SNI嗅探，阿里云对于SNI存在绕过问题，详见[阿里云ICP阻断绕过](https://blog.altasci.com/blog/%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E5%88%86%E4%BA%AB/%E9%98%BF%E9%87%8C%E4%BA%91icp%E9%98%BB%E6%96%AD%E7%BB%95%E8%BF%87/)
 
 ## 技术原理
 
@@ -215,4 +215,3 @@ sort = 1
 ![image-20260220223544572](./使用HTTPS承载TCP流量.assets/image-20260220223544572.png)
 
 二者内容等价，隧道工作正常
-

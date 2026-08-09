@@ -49,7 +49,7 @@ mcp dev server.py
 使用
 
 ```
-claude mcp add local-tools --scope user --transport stdio python D:\DreamReflexTech\devops-blog\playgrounds\server.py
+claude mcp add local-tools --scope user --transport stdio python D:\AltasCITech\devops-blog\playgrounds\server.py
 ```
 
 ![image-20260214205919821](./04-MCP制作.assets/image-20260214205919821.png)
@@ -151,4 +151,3 @@ claude mcp add remote-tools --transport sse http://127.0.0.1:3333/sse
 
 1. [FastMCP文档](https://gofastmcp.com/getting-started/welcome)
 2. [Claude Code文档](https://code.claude.com/docs/en/overview)
-

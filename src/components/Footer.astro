@@ -1,6 +1,6 @@
 ---
 const today = new Date();
-import { SITE_TITLE } from '../consts';
+import { SITE_LOGO, SITE_TITLE } from '../consts';
 
 let buildInfo = { date: '', sha: '' };
 try {
@@ -21,12 +21,12 @@ try {
 		<div class="footer-links-grid">
 			<div class="footer-column">
 				<a href="/" class="footer-logo">
-					<img src="/favicon.png" alt="Logo" width="40" height="40" />
+					<img src={SITE_LOGO} alt="AltasCI Logo" width="40" height="40" />
 					<span>{SITE_TITLE}</span>
 				</a>
 				<p class="site-desc">文章默认采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 协议。
 				<br>
-				云梦镜像博客对此站不做出SLA保障承诺和认证实践声明，您可以通过联系<a href="mailto:phil616@163.com">作者</a>邮箱或社区等方式获取联系方式和帮助。
+				AltasCI 博客对此站不做出SLA保障承诺和认证实践声明，您可以通过联系<a href="mailto:phil616@163.com">作者</a>邮箱或社区等方式获取联系方式和帮助。
 				<br>更多请参考：<a href="/about">关于本站</a>
 				</p>
 			</div>
@@ -86,7 +86,7 @@ try {
 
 <script define:vars={{ buildInfo }}>
 	if (buildInfo && buildInfo.date) {
-		console.info(`DreamReflex Blog build info: artifact build at ${buildInfo.date} with commit-sha:${buildInfo.sha}`);
+		console.info(`AltasCI Blog build info: artifact build at ${buildInfo.date} with commit-sha:${buildInfo.sha}`);
 		console.info(`招聘投递：hr@dreamreflex.com`)
 	}
 </script>

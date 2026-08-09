@@ -199,6 +199,46 @@ pre {
 pre > code {
 	all: unset;
 }
+.code-block-wrapper {
+	position: relative;
+	margin: 1.5em 0;
+}
+.code-block-wrapper > pre {
+	margin: 0;
+	padding-top: 3.5em;
+}
+.code-copy-button {
+	position: absolute;
+	top: 0.7rem;
+	right: 0.7rem;
+	z-index: 1;
+	padding: 0.3rem 0.75rem;
+	border: 1px solid rgba(255, 255, 255, 0.25);
+	border-radius: 6px;
+	background: rgba(15, 18, 25, 0.82);
+	color: #fff;
+	cursor: pointer;
+	font-size: 0.8rem;
+	line-height: 1.5;
+	opacity: 0.75;
+	transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+.code-block-wrapper:hover .code-copy-button,
+.code-copy-button:focus-visible {
+	opacity: 1;
+}
+.code-copy-button:focus-visible {
+	outline: 2px solid var(--accent);
+	outline-offset: 2px;
+}
+.code-copy-button.is-copied {
+	background: #18794e;
+}
+@media (hover: none) {
+	.code-copy-button {
+		opacity: 1;
+	}
+}
 blockquote {
 	border-left: 4px solid var(--accent);
 	padding: 0 0 0 20px;
