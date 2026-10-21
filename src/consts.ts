@@ -3,4 +3,4 @@
 
 export const SITE_TITLE = 'AltasCI 博客';
 export const SITE_DESCRIPTION = '欢迎来到 AltasCI！';
-export const SITE_LOGO = 'https://cdn.altasci.com/library/logos/altasci-logo-abg.png';
+export const SITE_LOGO = 'https://cdn.altasci.com/library/logos/v2/altasci-logo-text-abg.png';
