@@ -60,3 +60,7 @@ tmp/
 temp/
 
 .npmrc
+
+# local development folder
+
+localdev/
