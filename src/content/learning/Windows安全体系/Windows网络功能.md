@@ -1,4 +1,10 @@
-# Windows 网络体系、分层排障与证书配置
+---
+title: 'Windows 网络体系、分层排障与证书配置'
+description: '从应用到硬件建立 Windows 网络分层模型，给出按层排障的思路与证书配置要点。'
+pubDate: '2026-10-21'
+tags: []
+order: 10
+---
 
 上一篇：[调试与运行库](Windows调试.md) · 返回：[总目录](index.md) · 下一篇：[驱动机制](Windows驱动加载和签名机制.md)
 

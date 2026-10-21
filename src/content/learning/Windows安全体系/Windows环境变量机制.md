@@ -1,4 +1,10 @@
-# Windows 环境变量机制
+---
+title: 'Windows 环境变量机制'
+description: '说明环境变量的进程继承模型、机器与用户级配置的来源，以及 PowerShell 与 cmd 下的查看和设置方法。'
+pubDate: '2026-10-21'
+tags: []
+order: 7
+---
 
 上一篇：[安装与用户档案](WindowsMSI自动安装机制.md) · 返回：[总目录](index.md) · 下一篇：[日志体系](Windows日志体系.md)
 

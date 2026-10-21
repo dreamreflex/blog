@@ -1,4 +1,10 @@
-# Windows 软件安装、MSI 自动安装与用户档案
+---
+title: 'Windows 软件安装、MSI 自动安装与用户档案'
+description: '比较 MSI、EXE、MSIX 等安装形式的管理边界，解释每用户与每计算机安装范围及静默安装的使用前提。'
+pubDate: '2026-10-21'
+tags: []
+order: 6
+---
 
 上一篇：[账户机制](Windows账户机制.md) · 返回：[总目录](index.md) · 下一篇：[环境变量](Windows环境变量机制.md)
 

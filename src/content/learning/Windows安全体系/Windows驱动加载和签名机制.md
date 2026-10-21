@@ -1,4 +1,10 @@
-# Windows 驱动加载、签名、调试与发布
+---
+title: 'Windows 驱动加载、签名、调试与发布'
+description: '说明驱动在系统中的位置、加载与签名要求，以及不同 Windows 环境下的策略差异和发布流程。'
+pubDate: '2026-10-21'
+tags: []
+order: 11
+---
 
 上一篇：[网络功能](Windows网络功能.md) · 返回：[总目录](index.md)
 

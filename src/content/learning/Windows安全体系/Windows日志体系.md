@@ -1,4 +1,10 @@
-# Windows 日志体系与事件追踪
+---
+title: 'Windows 日志体系与事件追踪'
+description: '梳理事件日志、性能追踪、审计记录与内存转储等日志体系，以及各自的查看与追踪工具。'
+pubDate: '2026-10-21'
+tags: []
+order: 8
+---
 
 上一篇：[环境变量](Windows环境变量机制.md) · 返回：[总目录](index.md) · 下一篇：[调试与运行库](Windows调试.md)
 

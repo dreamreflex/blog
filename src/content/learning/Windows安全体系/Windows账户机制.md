@@ -1,4 +1,10 @@
-# Windows 账户、权限与登录认证
+---
+title: 'Windows 账户、权限与登录认证'
+description: '区分账户、凭据、登录与授权四件事，说明本地账户、域与 Microsoft Entra 身份及访问令牌权限的来源。'
+pubDate: '2026-10-21'
+tags: []
+order: 5
+---
 
 上一篇：[系统版本机制](Windows系统版本机制.md) · 返回：[总目录](index.md) · 下一篇：[安装机制](WindowsMSI自动安装机制.md)
 

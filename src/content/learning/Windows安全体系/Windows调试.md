@@ -1,4 +1,10 @@
-# Windows 软件调试、符号与运行库
+---
+title: 'Windows 软件调试、符号与运行库'
+description: '按原生程序、.NET 程序与内核故障分类选择调试工具，涉及符号、运行库与 Sysinternals 套件的使用。'
+pubDate: '2026-10-21'
+tags: []
+order: 9
+---
 
 上一篇：[日志体系](Windows日志体系.md) · 返回：[总目录](index.md) · 下一篇：[网络功能](Windows网络功能.md)
 

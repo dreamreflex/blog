@@ -1,4 +1,10 @@
-# Windows 系统版本机制
+---
+title: 'Windows 系统版本机制'
+description: '把 Windows 的"版本"拆成版本号、发行通道、授权版本和支持周期等维度，说明如何判断系统差异与兼容性。'
+pubDate: '2026-10-21'
+tags: []
+order: 4
+---
 
 返回：[总目录](index.md) · 下一篇：[账户机制](Windows账户机制.md)
 
